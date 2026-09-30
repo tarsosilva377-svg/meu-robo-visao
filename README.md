@@ -1,2 +1,278 @@
-# meu-robo-visao
-Esse é um robô detector a ponte para algo e ele dirá o nome 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>IA de Visão - App Nativo</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background-color: #121212; color: #e0e0e0;
+      display: flex; flex-direction: column; align-items: center; padding: 10px;
+    }
+    h2 { font-size: 16px; color: #00ffcc; text-align: center; margin-bottom: 8px; flex-shrink: 0; }
+    
+    #btnStart {
+      width: 100%; max-width: 360px; padding: 14px; background-color: #28a745;
+      color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: bold;
+      margin-bottom: 8px; cursor: pointer; flex-shrink: 0;
+    }
+    
+    .video-box {
+      position: relative; width: 100%; max-width: 360px; height: 200px;
+      background-color: #000; border-radius: 10px; overflow: hidden;
+      border: 1px solid #333; flex-shrink: 0;
+    }
+    video, canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+    
+    #chat-box {
+      width: 100%; max-width: 360px; flex: 1; background-color: #1e1e1e;
+      border-radius: 10px; margin-top: 8px; padding: 10px; overflow-y: auto;
+      border: 1px solid #333; display: flex; flex-direction: column; gap: 8px; margin-bottom: 60px;
+    }
+    .msg { padding: 10px 12px; border-radius: 8px; font-size: 13px; max-width: 88%; line-height: 1.3; }
+    .msg-user { background-color: #007bff; color: #fff; align-self: flex-end; }
+    .msg-ia { background-color: #2a2a2a; color: #00ffcc; align-self: flex-start; border-left: 3px solid #00ffcc; }
+    
+    .input-box { display: flex; width: 100%; max-width: 360px; position: fixed; bottom: 10px; z-index: 5; }
+    .mic-btn {
+      width: 100%; padding: 14px; background-color: #dc3545; color: white;
+      border: none; border-radius: 8px; font-weight: bold; font-size: 15px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>IA de Visão - Modo Automático 🧠🔊</h2>
+
+  <button id="btnStart" onclick="iniciarSistema()">📷 Iniciar Aplicativo</button>
+
+  <div class="video-box">
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="chat-box">
+    <div class="msg msg-ia">Olá! Os áudios já estão integrados. Ao identificar os objetos, o aplicativo falará automaticamente.</div>
+  </div>
+
+  <div class="input-box">
+    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Falar com o App</button>
+  </div>
+
+  <audio id="audioPlayer"></audio>
+
+  <script>
+    let model;
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const chatBox = document.getElementById('chat-box');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    let objetosNaTela = [];
+    let estaTocandoAudio = false;
+    let filaAudios = [];
+    let ultimosAudiosTocados = []; 
+
+    // MAPEAMENTO FIXO DE ÁUDIOS (Basta ter os arquivos MP3 na pasta "audios/")
+    const mapaAudios = {
+      'person_laptop': 'audios/pessoa_notebook.mp3',
+      'person_phone': 'audios/pessoa_tablet.mp3',
+      'person_dog': 'audios/pessoa_cachorro.mp3',
+      'laptop': 'audios/notebook.mp3',
+      'tv': 'audios/tv.mp3',
+      'keyboard': 'audios/teclado.mp3',
+      'mouse': 'audios/mouse.mp3',
+      'cell phone': 'audios/celular.mp3',
+      'dining table': 'audios/mesa.mp3',
+      'chair': 'audios/cadeira.mp3',
+      'person': 'audios/pessoa.mp3',
+      'dog': 'audios/cachorro.mp3',
+      'cat': 'audios/gato.mp3',
+      'luz_on': 'audios/luz.mp3',
+      'nada': 'audios/nada.mp3'
+    };
+
+    const dicionario = {
+      "laptop": "um notebook",
+      "tv": "uma TV ou monitor",
+      "keyboard": "um teclado",
+      "mouse": "um mouse",
+      "cell phone": "um celular ou tablet",
+      "dining table": "uma mesa",
+      "chair": "uma cadeira",
+      "person": "uma pessoa",
+      "dog": "um cachorro",
+      "cat": "um gato"
+    };
+
+    function adicionarAFila(chaves) {
+      chaves.forEach(chave => {
+        if (mapaAudios[chave] && !filaAudios.includes(chave)) {
+          filaAudios.push(chave);
+        }
+      });
+      processarFilaAudios();
+    }
+
+    function processarFilaAudios() {
+      if (estaTocandoAudio || filaAudios.length === 0) return;
+
+      estaTocandoAudio = true;
+      const chaveAtual = filaAudios.shift();
+
+      audioPlayer.src = mapaAudios[chaveAtual];
+      audioPlayer.play().catch(e => {
+        console.log("Aguardando arquivo de áudio:", mapaAudios[chaveAtual]);
+        estaTocandoAudio = false;
+        processarFilaAudios();
+      });
+
+      audioPlayer.onended = () => {
+        estaTocandoAudio = false;
+        processarFilaAudios();
+      };
+    }
+
+    async function iniciarSistema() {
+      const btn = document.getElementById('btnStart');
+      btn.innerText = "⏳ Carregando IA...";
+
+      try {
+        model = await cocoSsd.load();
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: "environment" } 
+        });
+        video.srcObject = stream;
+
+        video.onloadedmetadata = () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          btn.style.display = 'none';
+          adicionarMsgIA("Câmera conectada com sucesso!");
+          loopVisao();
+        };
+      } catch (err) {
+        alert("Ative a permissão de câmera para continuar.");
+        btn.innerText = "❌ Erro ao ligar a câmera";
+      }
+    }
+
+    async function loopVisao() {
+      const predictions = await model.detect(video);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      let detectados = [];
+      let chavesPresentes = [];
+
+      predictions.forEach(p => {
+        if (p.score > 0.45) {
+          let classe = p.class;
+          let nomeTraduzido = dicionario[classe] || classe;
+          
+          if (!chavesPresentes.includes(classe)) {
+            chavesPresentes.push(classe);
+          }
+          detectados.push({ original: classe, nome: nomeTraduzido });
+
+          const [x, y, w, h] = p.bbox;
+          ctx.strokeStyle = "#00ffcc";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x, y, w, h);
+          
+          ctx.fillStyle = "#00ffcc";
+          ctx.font = "bold 12px sans-serif";
+          ctx.fillText(nomeTraduzido.toUpperCase(), x, y > 12 ? y - 4 : 12);
+        }
+      });
+
+      objetosNaTela = detectados;
+
+      if (chavesPresentes.length > 0) {
+        let temPessoa = chavesPresentes.includes('person');
+        let temCachorro = chavesPresentes.includes('dog');
+        let temNotebook = chavesPresentes.includes('laptop');
+        let temCelular = chavesPresentes.includes('cell phone');
+
+        if (temPessoa && temNotebook) chavesPresentes = ['person_laptop'];
+        else if (temPessoa && temCelular) chavesPresentes = ['person_phone'];
+        else if (temPessoa && temCachorro) chavesPresentes = ['person_dog'];
+
+        let mudouObjetos = JSON.stringify(chavesPresentes.sort()) !== JSON.stringify(ultimosAudiosTocados.sort());
+
+        if (mudouObjetos && !estaTocandoAudio) {
+          ultimosAudiosTocados = [...chavesPresentes];
+          let nomesUnicos = [...new Set(detectados.map(o => o.nome))];
+          adicionarMsgIA("Estou vendo: " + nomesUnicos.join(', '));
+          adicionarAFila(chavesPresentes);
+        }
+      } else {
+        if (ultimosAudiosTocados.length > 0) {
+          ultimosAudiosTocados = [];
+        }
+      }
+
+      requestAnimationFrame(loopVisao);
+    }
+
+    function adicionarMsgUser(texto) {
+      const msg = document.createElement('div');
+      msg.className = 'msg msg-user';
+      msg.innerText = texto;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function adicionarMsgIA(texto) {
+      const msg = document.createElement('div');
+      msg.className = 'msg msg-ia';
+      msg.innerText = texto;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function iniciarReconhecimentoVoz() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Reconhecimento de voz não suportado neste navegador.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+
+      recognition.onstart = () => { adicionarMsgIA("Ouvindo..."); };
+
+      recognition.onresult = (event) => {
+        const textoFalado = event.results[0][0].transcript.toLowerCase();
+        adicionarMsgUser(textoFalado);
+
+        setTimeout(() => {
+          if (textoFalado.includes("luz") || textoFalado.includes("led")) {
+            adicionarMsgIA("Comando: Acender luz/LED");
+            adicionarAFila(['luz_on']);
+          } else if (objetosNaTela.length > 0) {
+            let chavesUnicas = [...new Set(objetosNaTela.map(o => o.original))];
+            let nomesUnicos = [...new Set(objetosNaTela.map(o => o.nome))];
+            adicionarMsgIA("Estou vendo: " + nomesUnicos.join(', '));
+            adicionarAFila(chavesUnicas);
+          } else {
+            adicionarMsgIA("Não estou vendo nada no momento.");
+            adicionarAFila(['nada']);
+          }
+        }, 300);
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
+ 
