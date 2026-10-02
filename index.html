@@ -3,43 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>IA de Visão - App Nativo</title>
+  <title>Robô Assistente - Visão & Voz IA</title>
   
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
-
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     html, body {
       width: 100%; height: 100%; overflow: hidden;
       background-color: #121212; color: #e0e0e0;
-      display: flex; flex-direction: column; align-items: center; padding: 10px;
+      display: flex; flex-direction: column; align-items: center; padding: 8px;
     }
-    h2 { font-size: 16px; color: #00ffcc; text-align: center; margin-bottom: 8px; flex-shrink: 0; }
+    h2 { font-size: 15px; color: #00ffcc; text-align: center; margin-bottom: 6px; }
     
     #btnStart {
-      width: 100%; max-width: 360px; padding: 14px; background-color: #28a745;
-      color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: bold;
-      margin-bottom: 8px; cursor: pointer; flex-shrink: 0;
+      width: 100%; max-width: 380px; padding: 12px; background-color: #28a745;
+      color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: bold;
+      margin-bottom: 6px; cursor: pointer; flex-shrink: 0;
     }
     
+    .controls-bar {
+      display: flex; gap: 8px; width: 100%; max-width: 380px; margin-bottom: 6px;
+    }
+    .btn-torch {
+      flex: 1; padding: 10px; background-color: #ffc107; color: #000;
+      border: none; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer;
+    }
+
     .video-box {
-      position: relative; width: 100%; max-width: 360px; height: 200px;
-      background-color: #000; border-radius: 10px; overflow: hidden;
+      position: relative; width: 100%; max-width: 380px; height: 180px;
+      background-color: #000; border-radius: 8px; overflow: hidden;
       border: 1px solid #333; flex-shrink: 0;
     }
-    video, canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+    video { width: 100%; height: 100%; object-fit: cover; }
     
     #chat-box {
-      width: 100%; max-width: 360px; flex: 1; background-color: #1e1e1e;
-      border-radius: 10px; margin-top: 8px; padding: 10px; overflow-y: auto;
-      border: 1px solid #333; display: flex; flex-direction: column; gap: 8px; margin-bottom: 60px;
+      width: 100%; max-width: 380px; flex: 1; background-color: #1e1e1e;
+      border-radius: 8px; margin-top: 6px; padding: 8px; overflow-y: auto;
+      border: 1px solid #333; display: flex; flex-direction: column; gap: 6px; margin-bottom: 60px;
     }
-    .msg { padding: 10px 12px; border-radius: 8px; font-size: 13px; max-width: 88%; line-height: 1.3; }
+    .msg { padding: 8px 10px; border-radius: 6px; font-size: 13px; max-width: 88%; line-height: 1.3; word-wrap: break-word; }
     .msg-user { background-color: #007bff; color: #fff; align-self: flex-end; }
     .msg-ia { background-color: #2a2a2a; color: #00ffcc; align-self: flex-start; border-left: 3px solid #00ffcc; }
     
-    .input-box { display: flex; width: 100%; max-width: 360px; position: fixed; bottom: 10px; z-index: 5; }
+    .input-box { display: flex; width: 100%; max-width: 380px; position: fixed; bottom: 8px; z-index: 5; }
     .mic-btn {
       width: 100%; padding: 14px; background-color: #dc3545; color: white;
       border: none; border-radius: 8px; font-weight: bold; font-size: 15px;
@@ -49,183 +54,206 @@
 </head>
 <body>
 
-  <h2>IA de Visão - Modo Automático 🧠🔊</h2>
+  <h2>🤖 Robô Assistente Multimodal</h2>
 
-  <button id="btnStart" onclick="iniciarSistema()">📷 Iniciar Aplicativo</button>
+  <button id="btnStart" onclick="iniciarSistema()">📷 Ligar Câmera, Voz e Lanterna</button>
+
+  <div class="controls-bar" id="controlsBar" style="display:none;">
+    <button class="btn-torch" id="btnTorch" onclick="alternarLanterna()">🔦 Alternar Lanterna</button>
+  </div>
 
   <div class="video-box">
     <video id="video" autoplay playsinline muted></video>
-    <canvas id="canvas"></canvas>
   </div>
 
   <div id="chat-box">
-    <div class="msg msg-ia">Olá! Os áudios já estão integrados. Ao identificar os objetos, o aplicativo falará automaticamente.</div>
+    <div class="msg msg-ia">Olá! Eu sou o seu robô assistente. Clique no botão vermelho e pergunte o que estou vendo ou peça para acender a lanterna!</div>
   </div>
 
   <div class="input-box">
-    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Falar com o App</button>
+    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Pergunta ao Robô</button>
   </div>
 
-  <audio id="audioPlayer"></audio>
+  <!-- Canvas oculto para captura de fotos da câmera para a API -->
+  <canvas id="snapshotCanvas" style="display:none;"></canvas>
 
   <script>
-    let model;
+    // Cole aqui sua chave de API do Google Gemini (se tiver)
+    const GEMINI_API_KEY = "SUA_CHAVE_GEMINI_AQUI";
+
     const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
     const chatBox = document.getElementById('chat-box');
-    const audioPlayer = document.getElementById('audioPlayer');
+    let videoTrack = null;
+    let lanternaAtiva = false;
 
-    let objetosNaTela = [];
-    let estaTocandoAudio = false;
-    let filaAudios = [];
-    let ultimosAudiosTocados = []; 
-
-    // MAPEAMENTO DIRETO DOS FICHEIROS MP3 (NA MESMA PASTA)
-    const mapaAudios = {
-      'person_laptop': 'pessoa_notebook.mp3',
-      'person_phone': 'pessoa_tablet.mp3',
-      'person_dog': 'pessoa_cachorro.mp3',
-      'laptop': 'notebook.mp3',
-      'tv': 'tv.mp3',
-      'keyboard': 'teclado.mp3',
-      'mouse': 'mouse.mp3',
-      'cell phone': 'celular.mp3',
-      'dining table': 'mesa.mp3',
-      'chair': 'cadeira.mp3',
-      'person': 'pessoa.mp3',
-      'dog': 'cachorro.mp3',
-      'cat': 'gato.mp3',
-      'bird': 'galinha.mp3',
-      'bicycle': 'bicicleta.mp3',
-      'bottle': 'garrafa.mp3',
-      'luz_on': 'luz.mp3',
-      'nada': 'nada.mp3'
-    };
-
-    const dicionario = {
-      "laptop": "um notebook",
-      "tv": "uma TV ou monitor",
-      "keyboard": "um teclado",
-      "mouse": "um mouse",
-      "cell phone": "um celular ou tablet",
-      "dining table": "uma mesa",
-      "chair": "uma cadeira",
-      "person": "uma pessoa",
-      "dog": "um cachorro",
-      "cat": "um gato",
-      "bird": "uma galinha",
-      "bicycle": "uma bicicleta",
-      "bottle": "uma garrafa"
-    };
-
-    function adicionarAFila(chaves) {
-      chaves.forEach(chave => {
-        if (mapaAudios[chave] && !filaAudios.includes(chave)) {
-          filaAudios.push(chave);
-        }
-      });
-      processarFilaAudios();
+    // 1. SINTETIZADOR DE VOZ (Opção 1: Voz Sem MP3)
+    function falar(texto) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Cancela falas anteriores
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = 'pt-BR';
+        utterance.rate = 1.0; // Velocidade normal
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
     }
 
-    function processarFilaAudios() {
-      if (estaTocandoAudio || filaAudios.length === 0) return;
-
-      estaTocandoAudio = true;
-      const chaveAtual = filaAudios.shift();
-
-      audioPlayer.src = mapaAudios[chaveAtual];
-      audioPlayer.play().catch(e => {
-        console.log("Ficheiro de áudio não encontrado:", mapaAudios[chaveAtual]);
-        estaTocandoAudio = false;
-        processarFilaAudios();
-      });
-
-      audioPlayer.onended = () => {
-        estaTocandoAudio = false;
-        processarFilaAudios();
-      };
-    }
-
+    // 2. LIGAR CÂMERA E PREPARAR SUPORTE À LANTERNA
     async function iniciarSistema() {
       const btn = document.getElementById('btnStart');
-      btn.innerText = "⏳ Carregando IA...";
+      btn.innerText = "⏳ Iniciando Câmera...";
 
       try {
-        model = await cocoSsd.load();
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: "environment" } 
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          },
+          audio: false
         });
+
         video.srcObject = stream;
+        videoTrack = stream.getVideoTracks()[0];
 
         video.onloadedmetadata = () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
           btn.style.display = 'none';
-          adicionarMsgIA("Câmera conectada com sucesso!");
-          loopVisao();
+          document.getElementById('controlsBar').style.display = 'flex';
+          const msg = "Sistema pronto! Câmera e síntese de voz ativadas.";
+          adicionarMsgIA(msg);
+          falar(msg);
         };
       } catch (err) {
-        alert("Ative a permissão de câmera para continuar.");
-        btn.innerText = "❌ Erro ao ligar a câmera";
+        console.error("Erro ao acessar a câmera:", err);
+        alert("Ative a permissão de câmera no seu dispositivo/app.");
+        btn.innerText = "🔄 Tentar Novamente";
       }
     }
 
-    async function loopVisao() {
-      const predictions = await model.detect(video);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      let detectados = [];
-      let chavesPresentes = [];
-
-      predictions.forEach(p => {
-        if (p.score > 0.45) {
-          let classe = p.class;
-          let nomeTraduzido = dicionario[classe] || classe;
-          
-          if (!chavesPresentes.includes(classe)) {
-            chavesPresentes.push(classe);
-          }
-          detectados.push({ original: classe, nome: nomeTraduzido });
-
-          const [x, y, w, h] = p.bbox;
-          ctx.strokeStyle = "#00ffcc";
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x, y, w, h);
-          
-          ctx.fillStyle = "#00ffcc";
-          ctx.font = "bold 12px sans-serif";
-          ctx.fillText(nomeTraduzido.toUpperCase(), x, y > 12 ? y - 4 : 12);
-        }
-      });
-
-      objetosNaTela = detectados;
-
-      if (chavesPresentes.length > 0) {
-        let temPessoa = chavesPresentes.includes('person');
-        let temCachorro = chavesPresentes.includes('dog');
-        let temNotebook = chavesPresentes.includes('laptop');
-        let temCelular = chavesPresentes.includes('cell phone');
-
-        if (temPessoa && temNotebook) chavesPresentes = ['person_laptop'];
-        else if (temPessoa && temCelular) chavesPresentes = ['person_phone'];
-        else if (temPessoa && temCachorro) chavesPresentes = ['person_dog'];
-
-        let mudouObjetos = JSON.stringify(chavesPresentes.sort()) !== JSON.stringify(ultimosAudiosTocados.sort());
-
-        if (mudouObjetos && !estaTocandoAudio) {
-          ultimosAudiosTocados = [...chavesPresentes];
-          let nomesUnicos = [...new Set(detectados.map(o => o.nome))];
-          adicionarMsgIA("Estou vendo: " + nomesUnicos.join(', '));
-          adicionarAFila(chavesPresentes);
-        }
-      } else {
-        if (ultimosAudiosTocados.length > 0) {
-          ultimosAudiosTocados = [];
-        }
+    // 3. CONTROLE DA LANTERNA (TORCH)
+    async function alternarLanterna(estadoDesejado = null) {
+      if (!videoTrack) {
+        adicionarMsgIA("Câmera não inicializada.");
+        return;
       }
 
-      requestAnimationFrame(loopVisao);
+      const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
+      
+      if (!capabilities.torch && !('torch' in capabilities)) {
+        console.warn("A API Web Torch pode não ser suportada diretamente neste navegador/hardware.");
+      }
+
+      lanternaAtiva = (estadoDesejado !== null) ? estadoDesejado : !lanternaAtiva;
+
+      try {
+        await videoTrack.applyConstraints({
+          advanced: [{ torch: lanternaAtiva }]
+        });
+        const status = lanternaAtiva ? "Lanterna acesa!" : "Lanterna apagada.";
+        adicionarMsgIA("🔦 " + status);
+        falar(status);
+      } catch (err) {
+        console.error("Erro ao alternar lanterna:", err);
+        adicionarMsgIA("Não foi possível alternar a lanterna neste dispositivo.");
+        falar("Não consegui controlar a lanterna.");
+      }
+    }
+
+    // 4. CAPTURAR FRAME ATUAL DA CÂMERA
+    function capturarFotoBase64() {
+      const canvas = document.getElementById('snapshotCanvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Retorna em JPEG sem o cabeçalho data:image/jpeg;base64,
+      return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+    }
+
+    // 5. ENVIAR PARA A INTELIGÊNCIA ARTIFICIAL (GEMINI API - VISÃO ILIMITADA)
+    async function analisarComGemini(perguntaUsuario) {
+      if (!GEMINI_API_KEY || GEMINI_API_KEY === "SUA_CHAVE_GEMINI_AQUI") {
+        const respostaFallback = "Modo Visão Gemini não configurado com chave de API. Mas posso ver pela câmera local!";
+        adicionarMsgIA(respostaFallback);
+        falar(respostaFallback);
+        return;
+      }
+
+      adicionarMsgIA("🤔 Analisando imagem...");
+      falar("Analisando imagem...");
+
+      const imageBase64 = capturarFotoBase64();
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+      const payload = {
+        contents: [{
+          parts: [
+            { text: "Você é um robô assistente amigável. Responda em português de forma direta e curta (no máximo 2 frases) sobre o que você vê na imagem para responder a esta pergunta: " + perguntaUsuario },
+            {
+              inline_data: {
+                mime_type: "image/jpeg",
+                data: imageBase64
+              }
+            }
+          ]
+        }]
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+          const respostaIA = data.candidates[0].content.parts[0].text;
+          adicionarMsgIA(respostaIA);
+          falar(respostaIA);
+        } else {
+          throw new Error("Resposta inválida da API");
+        }
+      } catch (err) {
+        console.error("Erro na API do Gemini:", err);
+        const erroMsg = "Tive um problema ao analisar a imagem pela IA.";
+        adicionarMsgIA(erroMsg);
+        falar(erroMsg);
+      }
+    }
+
+    // 6. RECONHECIMENTO DE VOZ DO USUÁRIO
+    function iniciarReconhecimentoVoz() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Reconhecimento de voz não suportado neste navegador.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'pt-BR';
+
+      recognition.onstart = () => { 
+        adicionarMsgIA("👂 Ouvindo...");
+      };
+
+      recognition.onresult = (event) => {
+        const textoFalado = event.results[0][0].transcript.toLowerCase();
+        adicionarMsgUser(textoFalado);
+
+        // Comandos de controle da Lanterna
+        if (textoFalado.includes("acender lanterna") || textoFalado.includes("ligar lanterna") || textoFalado.includes("liga a luz")) {
+          alternarLanterna(true);
+        } else if (textoFalado.includes("apagar lanterna") || textoFalado.includes("desligar lanterna") || textoFalado.includes("desliga a luz")) {
+          alternarLanterna(false);
+        } else {
+          // Qualquer outra pergunta é enviada para análise de imagem da IA
+          analisarComGemini(textoFalado);
+        }
+      };
+
+      recognition.start();
     }
 
     function adicionarMsgUser(texto) {
@@ -242,41 +270,6 @@
       msg.innerText = texto;
       chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function iniciarReconhecimentoVoz() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert("Reconhecimento de voz não suportado neste navegador.");
-        return;
-      }
-
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'pt-BR';
-
-      recognition.onstart = () => { adicionarMsgIA("Ouvindo..."); };
-
-      recognition.onresult = (event) => {
-        const textoFalado = event.results[0][0].transcript.toLowerCase();
-        adicionarMsgUser(textoFalado);
-
-        setTimeout(() => {
-          if (textoFalado.includes("luz") || textoFalado.includes("led")) {
-            adicionarMsgIA("Comando: Acender luz/LED");
-            adicionarAFila(['luz_on']);
-          } else if (objetosNaTela.length > 0) {
-            let chavesUnicas = [...new Set(objetosNaTela.map(o => o.original))];
-            let nomesUnicos = [...new Set(objetosNaTela.map(o => o.nome))];
-            adicionarMsgIA("Estou vendo: " + nomesUnicos.join(', '));
-            adicionarAFila(chavesUnicas);
-          } else {
-            adicionarMsgIA("Não estou vendo nada no momento.");
-            adicionarAFila(['nada']);
-          }
-        }, 300);
-      };
-
-      recognition.start();
     }
   </script>
 </body>
