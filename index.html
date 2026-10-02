@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>IA de Visão + Áudios Online</title>
+  <title>IA de Visão - App Nativo</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
@@ -13,81 +13,45 @@
     html, body {
       width: 100%; height: 100%; overflow: hidden;
       background-color: #121212; color: #e0e0e0;
-      display: flex; flex-direction: column; align-items: center; padding: 6px;
+      display: flex; flex-direction: column; align-items: center; padding: 10px;
     }
-    h2 { font-size: 14px; color: #00ffcc; text-align: center; margin-bottom: 4px; flex-shrink: 0; }
+    h2 { font-size: 16px; color: #00ffcc; text-align: center; margin-bottom: 8px; flex-shrink: 0; }
     
     #btnStart {
-      width: 100%; max-width: 360px; padding: 10px; background-color: #28a745;
-      color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: bold;
-      margin-bottom: 6px; cursor: pointer; flex-shrink: 0;
+      width: 100%; max-width: 360px; padding: 14px; background-color: #28a745;
+      color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: bold;
+      margin-bottom: 8px; cursor: pointer; flex-shrink: 0;
     }
     
     .video-box {
-      position: relative; width: 100%; max-width: 360px; height: 150px;
-      background-color: #000; border-radius: 8px; overflow: hidden;
+      position: relative; width: 100%; max-width: 360px; height: 200px;
+      background-color: #000; border-radius: 10px; overflow: hidden;
       border: 1px solid #333; flex-shrink: 0;
     }
     video, canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
     
     #chat-box {
       width: 100%; max-width: 360px; flex: 1; background-color: #1e1e1e;
-      border-radius: 8px; margin-top: 6px; padding: 8px; overflow-y: auto;
-      border: 1px solid #333; display: flex; flex-direction: column; gap: 6px; margin-bottom: 50px;
+      border-radius: 10px; margin-top: 8px; padding: 10px; overflow-y: auto;
+      border: 1px solid #333; display: flex; flex-direction: column; gap: 8px; margin-bottom: 60px;
     }
-    .msg { padding: 8px 10px; border-radius: 6px; font-size: 12px; max-width: 88%; line-height: 1.3; word-wrap: break-word; }
+    .msg { padding: 10px 12px; border-radius: 8px; font-size: 13px; max-width: 88%; line-height: 1.3; }
     .msg-user { background-color: #007bff; color: #fff; align-self: flex-end; }
     .msg-ia { background-color: #2a2a2a; color: #00ffcc; align-self: flex-start; border-left: 3px solid #00ffcc; }
     
-    .input-box { display: flex; width: 100%; max-width: 360px; position: fixed; bottom: 38px; z-index: 5; justify-content: center; }
+    .input-box { display: flex; width: 100%; max-width: 360px; position: fixed; bottom: 10px; z-index: 5; }
     .mic-btn {
-      width: 100%; padding: 12px; background-color: #dc3545; color: white;
-      border: none; border-radius: 6px; font-weight: bold; font-size: 14px;
+      width: 100%; padding: 14px; background-color: #dc3545; color: white;
+      border: none; border-radius: 8px; font-weight: bold; font-size: 15px;
       cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-
-    /* GAVETA / BOTTOM SHEET */
-    .sheet-drawer {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: 70%; background-color: #181818; border-top: 2px solid #00ffcc;
-      border-radius: 16px 16px 0 0; transform: translateY(calc(100% - 32px));
-      transition: transform 0.3s ease-out; z-index: 10; display: flex; flex-direction: column;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.8);
-    }
-    .sheet-drawer.open { transform: translateY(0); }
-    
-    .sheet-header {
-      height: 32px; background-color: #252525; border-radius: 16px 16px 0 0;
-      display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;
-    }
-    .handle-bar { width: 40px; height: 5px; background-color: #00ffcc; border-radius: 3px; }
-
-    .sheet-content {
-      padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px;
-    }
-    .sheet-title { font-size: 13px; color: #00ffcc; font-weight: bold; margin-bottom: 4px; text-align: center; }
-
-    .audio-item {
-      background-color: #262626; padding: 8px; border-radius: 6px; border: 1px solid #333;
-    }
-    .audio-item.highlight {
-      border: 1px solid #00ffcc; background-color: #1f3330;
-    }
-    .audio-item.special {
-      border: 1px solid #ffc107; background-color: #332b1f;
-    }
-    .audio-item label { font-size: 11px; color: #fff; display: block; margin-bottom: 4px; font-weight: bold; }
-    .audio-item input[type="text"] {
-      font-size: 11px; color: #00ffcc; background: #121212; border: 1px solid #444;
-      border-radius: 4px; padding: 6px; width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <h2>IA de Visão com Áudios Online 🧠🔊</h2>
+  <h2>IA de Visão - Modo Automático 🧠🔊</h2>
 
-  <button id="btnStart" onclick="iniciarSistema()">📷 Ligar Câmera e Ativar Som</button>
+  <button id="btnStart" onclick="iniciarSistema()">📷 Iniciar Aplicativo</button>
 
   <div class="video-box">
     <video id="video" autoplay playsinline muted></video>
@@ -95,111 +59,11 @@
   </div>
 
   <div id="chat-box">
-    <div class="msg msg-ia">Olá! Os áudios serão reproduzidos via links online. Abra a aba inferior para ver ou editar os URLs!</div>
+    <div class="msg msg-ia">Olá! Os áudios já estão integrados. Ao identificar os objetos, o aplicativo falará automaticamente.</div>
   </div>
 
   <div class="input-box">
-    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Falar com a IA</button>
-  </div>
-
-  <!-- GAVETA INFERIOR DESLIZANTE PARA GERENCIAR LINKS DE ÁUDIO -->
-  <div class="sheet-drawer" id="sheetDrawer">
-    <div class="sheet-header" id="sheetHeader">
-      <div class="handle-bar"></div>
-    </div>
-    <div class="sheet-content">
-      <div class="sheet-title">🌐 Links Online dos Áudios (URL):</div>
-
-      <div class="audio-item special">
-        <label>💡 Quando pedir: "Acender LED / Luz"</label>
-        <input type="text" id="url_luz_on" value="luz.mp3" onchange="atualizarUrlAudio('luz_on', this.value)">
-      </div>
-
-      <div class="audio-item highlight">
-        <label>👤💻 Quando ver: Pessoa mexendo no notebook</label>
-        <input type="text" id="url_person_laptop" value="pessoa_notebook.mp3" onchange="atualizarUrlAudio('person_laptop', this.value)">
-      </div>
-
-      <div class="audio-item highlight">
-        <label>👤📱 Quando ver: Pessoa no celular</label>
-        <input type="text" id="url_person_phone" value="pessoa_tablet.mp3" onchange="atualizarUrlAudio('person_phone', this.value)">
-      </div>
-
-      <div class="audio-item highlight">
-        <label>👥🐶 Quando ver: Pessoa E Cachorro</label>
-        <input type="text" id="url_person_dog" value="pessoa_cachorro.mp3" onchange="atualizarUrlAudio('person_dog', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>💻 Quando ver: "um notebook"</label>
-        <input type="text" id="url_laptop" value="notebook.mp3" onchange="atualizarUrlAudio('laptop', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>📺 Quando ver: "uma TV / monitor"</label>
-        <input type="text" id="url_tv" value="tv.mp3" onchange="atualizarUrlAudio('tv', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>⌨️ Quando ver: "um teclado"</label>
-        <input type="text" id="url_keyboard" value="teclado.mp3" onchange="atualizarUrlAudio('keyboard', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🖱️ Quando ver: "um mouse"</label>
-        <input type="text" id="url_mouse" value="mouse.mp3" onchange="atualizarUrlAudio('mouse', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>📱 Quando ver: "um celular"</label>
-        <input type="text" id="url_cell_phone" value="celular.mp3" onchange="atualizarUrlAudio('cell phone', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🪑/🟫 Quando ver: "uma mesa"</label>
-        <input type="text" id="url_dining_table" value="mesa.mp3" onchange="atualizarUrlAudio('dining table', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🪑 Quando ver: "uma cadeira"</label>
-        <input type="text" id="url_chair" value="cadeira.mp3" onchange="atualizarUrlAudio('chair', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>👤 Quando ver: "uma pessoa"</label>
-        <input type="text" id="url_person" value="pessoa.mp3" onchange="atualizarUrlAudio('person', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🐶 Quando ver: "um cachorro"</label>
-        <input type="text" id="url_dog" value="cachorro.mp3" onchange="atualizarUrlAudio('dog', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🐱 Quando ver: "um gato"</label>
-        <input type="text" id="url_cat" value="gato.mp3" onchange="atualizarUrlAudio('cat', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🐔 Quando ver: "uma galinha / pássaro"</label>
-        <input type="text" id="url_bird" value="galinha.mp3" onchange="atualizarUrlAudio('bird', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🚲 Quando ver: "uma bicicleta"</label>
-        <input type="text" id="url_bicycle" value="bicicleta.mp3" onchange="atualizarUrlAudio('bicycle', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>🍾 Quando ver: "uma garrafa"</label>
-        <input type="text" id="url_bottle" value="garrafa.mp3" onchange="atualizarUrlAudio('bottle', this.value)">
-      </div>
-
-      <div class="audio-item">
-        <label>❓ Quando NÃO ver nada:</label>
-        <input type="text" id="url_nada" value="nada.mp3" onchange="atualizarUrlAudio('nada', this.value)">
-      </div>
-    </div>
+    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Falar com o App</button>
   </div>
 
   <audio id="audioPlayer"></audio>
@@ -217,9 +81,8 @@
     let filaAudios = [];
     let ultimosAudiosTocados = []; 
 
-    // MAPA DE ÁUDIOS ONLINE (APONTA PARA OS MP3 NO MESMO SERVIDOR / GITHUB)
+    // MAPEAMENTO DIRETO DOS FICHEIROS MP3 (NA MESMA PASTA)
     const mapaAudios = {
-      'luz_on': 'luz.mp3',
       'person_laptop': 'pessoa_notebook.mp3',
       'person_phone': 'pessoa_tablet.mp3',
       'person_dog': 'pessoa_cachorro.mp3',
@@ -236,6 +99,7 @@
       'bird': 'galinha.mp3',
       'bicycle': 'bicicleta.mp3',
       'bottle': 'garrafa.mp3',
+      'luz_on': 'luz.mp3',
       'nada': 'nada.mp3'
     };
 
@@ -250,14 +114,10 @@
       "person": "uma pessoa",
       "dog": "um cachorro",
       "cat": "um gato",
-      "bird": "uma galinha ou pássaro",
+      "bird": "uma galinha",
       "bicycle": "uma bicicleta",
       "bottle": "uma garrafa"
     };
-
-    function atualizarUrlAudio(chave, novoUrl) {
-      mapaAudios[chave] = novoUrl.trim();
-    }
 
     function adicionarAFila(chaves) {
       chaves.forEach(chave => {
@@ -268,78 +128,46 @@
       processarFilaAudios();
     }
 
-    // ADAPTAÇÃO DE ÁUDIO PARA WEBVIEW DO APPCREATOR
-    function tocarAudioOnline(url) {
-      if (!url) return;
-      
-      audioPlayer.src = url;
-      let playPromise = audioPlayer.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          // Áudio iniciado com sucesso
-        }).catch(error => {
-          console.log("Erro de Autoplay no WebView:", error);
-          estaTocandoAudio = false;
-          processarFilaAudios();
-        });
-      }
-    }
-
     function processarFilaAudios() {
       if (estaTocandoAudio || filaAudios.length === 0) return;
 
       estaTocandoAudio = true;
       const chaveAtual = filaAudios.shift();
 
-      tocarAudioOnline(mapaAudios[chaveAtual]);
+      audioPlayer.src = mapaAudios[chaveAtual];
+      audioPlayer.play().catch(e => {
+        console.log("Ficheiro de áudio não encontrado:", mapaAudios[chaveAtual]);
+        estaTocandoAudio = false;
+        processarFilaAudios();
+      });
 
       audioPlayer.onended = () => {
         estaTocandoAudio = false;
         processarFilaAudios();
       };
-
-      audioPlayer.onerror = () => {
-        console.log("Erro ao carregar o arquivo MP3");
-        estaTocandoAudio = false;
-        processarFilaAudios();
-      };
     }
 
-    // ADAPTAÇÃO DA CÂMERA E INICIALIZAÇÃO PARA APPCREATOR
     async function iniciarSistema() {
       const btn = document.getElementById('btnStart');
-      btn.innerText = "⏳ Solicitando Câmera...";
-
-      // Destrava o áudio do WebView após a interação do toque
-      audioPlayer.play().then(() => audioPlayer.pause()).catch(() => {});
+      btn.innerText = "⏳ Carregando IA...";
 
       try {
         model = await cocoSsd.load();
-
-        const constraints = {
-          video: {
-            facingMode: { ideal: "environment" },
-            width: { ideal: 640 },
-            height: { ideal: 480 }
-          },
-          audio: false
-        };
-
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: "environment" } 
+        });
         video.srcObject = stream;
 
         video.onloadedmetadata = () => {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           btn.style.display = 'none';
-          adicionarMsgIA("Câmera ativa! O sistema está pronto.");
+          adicionarMsgIA("Câmera conectada com sucesso!");
           loopVisao();
         };
       } catch (err) {
-        console.error("Erro na câmera/WebView:", err);
-        alert("Ative a permissão de câmera ao aparecer no pop-up do aplicativo!");
-        btn.innerText = "🔄 Tentar Novamente";
+        alert("Ative a permissão de câmera para continuar.");
+        btn.innerText = "❌ Erro ao ligar a câmera";
       }
     }
 
@@ -379,13 +207,9 @@
         let temNotebook = chavesPresentes.includes('laptop');
         let temCelular = chavesPresentes.includes('cell phone');
 
-        if (temPessoa && temNotebook && mapaAudios['person_laptop']) {
-          chavesPresentes = ['person_laptop'];
-        } else if (temPessoa && temCelular && mapaAudios['person_phone']) {
-          chavesPresentes = ['person_phone'];
-        } else if (temPessoa && temCachorro && mapaAudios['person_dog']) {
-          chavesPresentes = ['person_dog'];
-        }
+        if (temPessoa && temNotebook) chavesPresentes = ['person_laptop'];
+        else if (temPessoa && temCelular) chavesPresentes = ['person_phone'];
+        else if (temPessoa && temCachorro) chavesPresentes = ['person_dog'];
 
         let mudouObjetos = JSON.stringify(chavesPresentes.sort()) !== JSON.stringify(ultimosAudiosTocados.sort());
 
@@ -423,7 +247,7 @@
     function iniciarReconhecimentoVoz() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        alert("O seu navegador não suporta reconhecimento de voz.");
+        alert("Reconhecimento de voz não suportado neste navegador.");
         return;
       }
 
@@ -437,19 +261,16 @@
         adicionarMsgUser(textoFalado);
 
         setTimeout(() => {
-          const comLuz = ["acender led", "acender luz", "acenda a luz", "acenda o led", "iluminar", "clarear"];
-          const pediuLuz = comLuz.some(termo => textoFalado.includes(termo));
-
-          if (pediuLuz) {
-            adicionarMsgIA("Comando: Acendendo LED...");
+          if (textoFalado.includes("luz") || textoFalado.includes("led")) {
+            adicionarMsgIA("Comando: Acender luz/LED");
             adicionarAFila(['luz_on']);
           } else if (objetosNaTela.length > 0) {
             let chavesUnicas = [...new Set(objetosNaTela.map(o => o.original))];
             let nomesUnicos = [...new Set(objetosNaTela.map(o => o.nome))];
-            adicionarMsgIA("Respondendo: Estou vendo " + nomesUnicos.join(', '));
+            adicionarMsgIA("Estou vendo: " + nomesUnicos.join(', '));
             adicionarAFila(chavesUnicas);
           } else {
-            adicionarMsgIA("Respondendo: Não vejo nada.");
+            adicionarMsgIA("Não estou vendo nada no momento.");
             adicionarAFila(['nada']);
           }
         }, 300);
@@ -457,18 +278,6 @@
 
       recognition.start();
     }
-
-    const drawer = document.getElementById('sheetDrawer');
-    const header = document.getElementById('sheetHeader');
-    let startY = 0;
-
-    header.addEventListener('click', () => drawer.classList.toggle('open'));
-    header.addEventListener('touchstart', (e) => startY = e.touches[0].clientY);
-    header.addEventListener('touchend', (e) => {
-      let endY = e.changedTouches[0].clientY;
-      if (startY - endY > 30) drawer.classList.add('open');
-      else if (endY - startY > 30) drawer.classList.remove('open');
-    });
   </script>
 </body>
 </html>
