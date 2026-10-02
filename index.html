@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Robô Assistente - Visão & Voz IA</title>
   
+  <!-- Carregamento das bibliotecas locais/tradicionais para o Plano B / Plano C -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     html, body {
@@ -54,7 +58,7 @@
 </head>
 <body>
 
-  <h2>🤖 Robô Assistente Multimodal</h2>
+  <h2>🤖 Robô Assistente (Plano A / B / C)</h2>
 
   <button id="btnStart" onclick="iniciarSistema()">📷 Ligar Câmera, Voz e Lanterna</button>
 
@@ -67,25 +71,32 @@
   </div>
 
   <div id="chat-box">
-    <div class="msg msg-ia">Olá! Eu sou o seu robô assistente. Clique no botão vermelho e pergunte o que estou vendo ou peça para acender a lanterna!</div>
+    <div class="msg msg-ia">Modo padrão ativado (Plano C: Identificação tradicional). Peça "analisar com inteligência artificial" para usar o modo IA!</div>
   </div>
 
   <div class="input-box">
-    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Pergunta ao Robô</button>
+    <button class="mic-btn" onclick="iniciarReconhecimentoVoz()">🎙️ Falar com Assistente</button>
   </div>
 
   <canvas id="snapshotCanvas" style="display:none;"></canvas>
 
   <script>
-    // =========================================================
-    // LINHA 88: COLE A SUA CHAVE DO OPENROUTER ENTRE AS ASPAS
-    // =========================================================
+    // CHAVE DO OPENROUTER
     const OPENROUTER_API_KEY = "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";
 
     const video = document.getElementById('video');
     const chatBox = document.getElementById('chat-box');
     let videoTrack = null;
     let lanternaAtiva = false;
+    let modeloLocalCOCO = null;
+
+    // Tradução básica de objetos comuns para português no Plano B / C
+    const tradutorObjetos = {
+      "person": "pessoa", "cell phone": "celular", "laptop": "notebook",
+      "mouse": "mouse", "keyboard": "teclado", "cup": "xícara ou copo",
+      "bottle": "garrafa", "chair": "cadeira", "book": "livro",
+      "tv": "televisão", "dog": "cachorro", "cat": "gato"
+    };
 
     // 1. SINTETIZADOR DE VOZ
     function falar(texto) {
@@ -99,10 +110,17 @@
       }
     }
 
-    // 2. LIGAR CÂMERA E LANTERNA AUTOMÁTICA
+    // 2. LIGAR CÂMERA E CARREGAR PLANO C (DETECÇÃO LOCAL)
     async function iniciarSistema() {
       const btn = document.getElementById('btnStart');
-      btn.innerText = "⏳ Iniciando Câmera...";
+      btn.innerText = "⏳ Carregando Câmera e Modelo Local...";
+
+      // Inicializa modelo local COCO-SSD para o Plano C / B
+      try {
+        modeloLocalCOCO = await cocoSsd.load();
+      } catch (e) {
+        console.warn("Não foi possível carregar modelo local adiantado.", e);
+      }
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -121,10 +139,9 @@
           btn.style.display = 'none';
           document.getElementById('controlsBar').style.display = 'flex';
           
-          // LIGA A LANTERNA AUTOMATICAMENTE AO INICIAR
           await alternarLanterna(true);
 
-          const msg = "Sistema pronto! Câmera, lanterna e voz ativadas.";
+          const msg = "Sistema pronto no Plano C (visão local). Diga 'analisar com IA' quando desejar a análise avançada!";
           adicionarMsgIA(msg);
           falar(msg);
         };
@@ -135,23 +152,17 @@
       }
     }
 
-    // 3. CONTROLE DA LANTERNA (TORCH)
+    // 3. CONTROLE DA LANTERNA
     async function alternarLanterna(estadoDesejado = null) {
-      if (!videoTrack) {
-        adicionarMsgIA("Câmera não inicializada.");
-        return;
-      }
-
+      if (!videoTrack) return;
       lanternaAtiva = (estadoDesejado !== null) ? estadoDesejado : !lanternaAtiva;
-
       try {
         await videoTrack.applyConstraints({
           advanced: [{ torch: lanternaAtiva }]
         });
-        const status = lanternaAtiva ? "Lanterna acesa!" : "Lanterna apagada.";
-        adicionarMsgIA("🔦 " + status);
+        adicionarMsgIA("🔦 " + (lanternaAtiva ? "Lanterna acesa!" : "Lanterna apagada."));
       } catch (err) {
-        console.warn("Não foi possível alterar a lanterna diretamente:", err);
+        console.warn("Controle de lanterna indisponível:", err);
       }
     }
 
@@ -165,17 +176,50 @@
       return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
     }
 
-    // 5. ENVIAR PARA IA (OPENROUTER)
+    // 5. PLANO B e C: ANÁLISE TRADICIONAL LOCAL DE OBJETOS
+    async function executarAnaliseLocalPlanoB(motivoTrigger) {
+      adicionarMsgIA(`🔄 Executando análise de visão tradicional (Plano B/C)...`);
+      falar("Analisando objetos na imagem...");
+
+      try {
+        if (!modeloLocalCOCO) {
+          modeloLocalCOCO = await cocoSsd.load();
+        }
+
+        const predicoes = await modeloLocalCOCO.detect(video);
+        
+        if (predicoes && predicoes.length > 0) {
+          const objetosEncontrados = predicoes.map(p => {
+            const nomePt = tradutorObjetos[p.class] || p.class;
+            return `${nomePt} (${Math.round(p.score * 100)}% de certeza)`;
+          });
+
+          const resultado = "Objetos identificados localmente: " + objetosEncontrados.join(", ") + ".";
+          adicionarMsgIA(resultado);
+          falar(resultado);
+        } else {
+          const semObjeto = "Análise tradicional concluída: Nenhum objeto principal foi identificado claramente.";
+          adicionarMsgIA(semObjeto);
+          falar(semObjeto);
+        }
+      } catch (err) {
+        console.error("Erro no Plano B/C local:", err);
+        const erroLocal = "Não foi possível identificar objetos na imagem localmente.";
+        adicionarMsgIA(erroLocal);
+        falar(erroLocal);
+      }
+    }
+
+    // 6. PLANO A: ANÁLISE DE IA COM FALLBACK AUTOMÁTICO PARA O PLANO B
     async function analisarComIA(perguntaUsuario) {
       if (!OPENROUTER_API_KEY || OPENROUTER_API_KEY.includes("SUA_CHAVE")) {
-        const msg = "Adicione a chave do OpenRouter no código para ativar a IA!";
-        adicionarMsgIA(msg);
-        falar(msg);
+        adicionarMsgIA("⚠️ Chave de IA não configurada. Redirecionando para análise tradicional...");
+        await executarAnaliseLocalPlanoB("Sem chave");
         return;
       }
 
-      adicionarMsgIA("🤔 Analisando imagem...");
-      falar("Analisando imagem...");
+      adicionarMsgIA("🤖 [Plano A] Enviando imagem para Inteligência Artificial...");
+      falar("Enviando para inteligência artificial...");
 
       const imageBase64 = capturarFotoBase64();
 
@@ -183,11 +227,13 @@
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-            "Content-Type": "application/json"
+            "Authorization": `Bearer ${OPENROUTER_API_KEY.trim()}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": window.location.href,
+            "X-Title": "Meu Robo Visao"
           },
           body: JSON.stringify({
-            "model": "google/gemini-2.5-flash",
+            "model": "meta-llama/llama-3.2-11b-vision-instruct:free",
             "messages": [
               {
                 "role": "user",
@@ -209,22 +255,23 @@
         });
 
         const data = await response.json();
-        if (data.choices && data.choices[0].message.content) {
-          const respostaIA = data.choices[0].message.content;
-          adicionarMsgIA(respostaIA);
-          falar(respostaIA);
-        } else {
-          throw new Error("Erro de resposta");
+
+        if (data.error || !data.choices || !data.choices[0] || !data.choices[0].message.content) {
+          throw new Error(data.error ? data.error.message : "Resposta inválida da API de IA");
         }
+
+        const respostaIA = data.choices[0].message.content;
+        adicionarMsgIA("🤖 IA: " + respostaIA);
+        falar(respostaIA);
+
       } catch (err) {
-        console.error("Erro na API:", err);
-        const erroMsg = "Tive um problema ao analisar com a IA.";
-        adicionarMsgIA(erroMsg);
-        falar(erroMsg);
+        console.warn("Falha no Plano A (IA). Ativando Plano B automaticamente...", err);
+        adicionarMsgIA("⚠️ Falha ao conectar com a IA. Ativando Plano B (Análise Tradicional)...");
+        await executarAnaliseLocalPlanoB("Falha na API");
       }
     }
 
-    // 6. RECONHECIMENTO DE VOZ
+    // 7. RECONHECIMENTO DE VOZ
     function iniciarReconhecimentoVoz() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -243,14 +290,27 @@
         const textoFalado = event.results[0][0].transcript.toLowerCase();
         adicionarMsgUser(textoFalado);
 
+        // Comandos de Lanterna
         if (textoFalado.includes("acender lanterna") || textoFalado.includes("ligar lanterna") || textoFalado.includes("liga a luz")) {
           alternarLanterna(true);
           falar("Acendendo a lanterna.");
-        } else if (textoFalado.includes("apagar lanterna") || textoFalado.includes("desligar lanterna") || textoFalado.includes("desliga a luz")) {
+        } 
+        else if (textoFalado.includes("apagar lanterna") || textoFalado.includes("desligar lanterna") || textoFalado.includes("desliga a luz")) {
           alternarLanterna(false);
           falar("Apagando a lanterna.");
-        } else {
+        } 
+        // Chama a IA (Plano A com Fallback para Plano B) se solicitado explicitamente
+        else if (
+          textoFalado.includes("inteligência artificial") || 
+          textoFalado.includes("analisar com ia") || 
+          textoFalado.includes("usar ia") ||
+          textoFalado.includes("modo ia")
+        ) {
           analisarComIA(textoFalado);
+        }
+        // Caso contrário, opera no Plano C (Análise Local)
+        else {
+          executarAnaliseLocalPlanoB("Solicitação Padrão Plano C");
         }
       };
 
