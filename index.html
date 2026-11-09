@@ -3,157 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tidal Warfare - Fragata Stealth Realista</title>
+<title>Tidal Warfare - Fragata Stealth</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
-  body{background:#0a1422;width:100vw;height:100vh;overflow:hidden}
+  body{background:#87a5b8;width:100vw;height:100vh;overflow:hidden}
   #ui{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:rgba(10,20,35,.9);border:1.5px solid #00d2d3;padding:10px 18px;border-radius:12px;color:#fff;font-weight:700;font-size:13px;z-index:10;white-space:nowrap}
-  #buttons{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:10;flex-wrap:wrap;justify-content:center}
-  .btn{background:#00d2d3;color:#000;border:none;padding:10px 18px;border-radius:20px;font-weight:700;cursor:pointer}
-  .btn2{background:#1a2a3a;color:#fff;border:1.5px solid #00d2d3;padding:10px 18px;border-radius:20px;font-weight:700;cursor:pointer}
-  #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0a1422;color:#00d2d3;font-weight:700;z-index:20}
+  #buttons{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;flex-wrap:wrap;justify-content:center}
+  .btn{background:#00d2d3;color:#000;border:none;padding:10px 16px;border-radius:20px;font-weight:700;cursor:pointer}
+  .btn2{background:#1a2a3a;color:#fff;border:1.5px solid #00d2d3;padding:10px 16px;border-radius:20px;font-weight:700;cursor:pointer}
+  #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0a1422;color:#00d2d3;font-weight:700;z-index:20;flex-direction:column;gap:10px}
   canvas{display:block}
 </style>
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
 </head>
 <body>
-<div id="loading">Carregando fragata...</div>
+<div id="loading">Carregando fragata...<br><small style="color:#fff;font-weight:400">Se demorar, recarregue a página</small></div>
 <div id="ui">⚓ FRAGATA STEALTH - TIDAL WARFARE</div>
 <div id="buttons">
   <button class="btn" onclick="setView('side')">Lateral</button>
   <button class="btn2" onclick="setView('top')">Topo (Jogo)</button>
   <button class="btn2" onclick="setView('front')">Proa</button>
-  <button class="btn2" onclick="setView('orbit')">Orbitar</button>
 </div>
 
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+<script>
+// SE O THREE NÃO CARREGAR EM 3s, MOSTRA ERRO E NÃO FICA TRAVADO
+setTimeout(function(){
+  if(typeof THREE === 'undefined'){
+    document.getElementById('loading').innerHTML = 'Erro: sem internet para carregar o 3D.<br>Recarregue a página com Wi-Fi.';
+  }
+}, 3000);
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87a5b8);
-scene.fog = new THREE.Fog(0x87a5b8, 60, 140);
+window.addEventListener('load', function(){
+  if(typeof THREE === 'undefined') return;
 
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 500);
-camera.position.set(18, 8, 22);
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x87a5b8);
+  scene.fog = new THREE.Fog(0x87a5b8, 60, 140);
 
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
-document.body.appendChild(renderer.domElement);
+  var camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 500);
+  camera.position.set(18, 8, 22);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.target.set(0, 1, 0);
+  var renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.shadowMap.enabled = true;
+  document.body.appendChild(renderer.domElement);
 
-// LUZES REALISTAS
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-const sun = new THREE.DirectionalLight(0xffffff, 2.2);
-sun.position.set(30, 40, 20);
-sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.left = -20; sun.shadow.camera.right = 20;
-sun.shadow.camera.top = 20; sun.shadow.camera.bottom = -20;
-scene.add(sun);
-const fill = new THREE.DirectionalLight(0x88aaff, 0.5);
-fill.position.set(-20, 10, -20);
-scene.add(fill);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  var sun = new THREE.DirectionalLight(0xffffff, 1.2);
+  sun.position.set(30, 40, 20); sun.castShadow = true;
+  scene.add(sun);
+  var fill = new THREE.DirectionalLight(0x88aaff, 0.4);
+  fill.position.set(-20, 10, -20); scene.add(fill);
 
-// MAR REALISTA
-const sea = new THREE.Mesh(
-  new THREE.PlaneGeometry(300, 300, 80, 80),
-  new THREE.MeshStandardMaterial({color:0x0a4a6e, roughness:0.15, metalness:0.6})
-);
-sea.rotation.x = -Math.PI/2;
-sea.position.y = -1.8;
-sea.receiveShadow = true;
-scene.add(sea);
+  var sea = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshStandardMaterial({color:0x0a4a6e, roughness:0.2, metalness:0.5}));
+  sea.rotation.x = -Math.PI/2; sea.position.y = -1.8; sea.receiveShadow = true; scene.add(sea);
 
-// ===== MATERIAIS =====
-const matHull = new THREE.MeshStandardMaterial({color:0x8a8f96, roughness:0.45, metalness:0.55});
-const matDeck = new THREE.MeshStandardMaterial({color:0x6b7078, roughness:0.7, metalness:0.3});
-const matDark = new THREE.MeshStandardMaterial({color:0x23262b, roughness:0.5, metalness:0.6});
-const matBlack = new THREE.MeshStandardMaterial({color:0x0f1113, roughness:0.35, metalness:0.7});
-const matGlass = new THREE.MeshStandardMaterial({color:0x0a1a2a, roughness:0.1, metalness:0.9});
-const matRed = new THREE.MeshStandardMaterial({color:0xb02a1e, roughness:0.5, metalness:0.2});
-const matWhite = new THREE.MeshStandardMaterial({color:0xf0f0f0, roughness:0.6});
-const matCopper = new THREE.MeshStandardMaterial({color:0x8a6a3a, roughness:0.4, metalness:0.8});
+  var matHull = new THREE.MeshStandardMaterial({color:0x8a8f96, roughness:0.45, metalness:0.55});
+  var matDeck = new THREE.MeshStandardMaterial({color:0x6b7078, roughness:0.7, metalness:0.3});
+  var matDark = new THREE.MeshStandardMaterial({color:0x23262b, roughness:0.5, metalness:0.6});
+  var matBlack = new THREE.MeshStandardMaterial({color:0x0f1113, roughness:0.35, metalness:0.7});
+  var matGlass = new THREE.MeshStandardMaterial({color:0x0a1a2a, roughness:0.1, metalness:0.9});
+  var matRed = new THREE.MeshStandardMaterial({color:0xb02a1e, roughness:0.5, metalness:0.2});
+  var matWhite = new THREE.MeshStandardMaterial({color:0xf0f0f0, roughness:0.6});
 
-const ship = new THREE.Group();
-scene.add(ship);
+  var ship = new THREE.Group(); scene.add(ship);
+  function add(mesh, x, y, z){
+    mesh.position.set(x||0, y||0, z||0);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    ship.add(mesh); return mesh;
+  }
 
-function add(mesh, x=0, y=0, z=0){
-  mesh.position.set(x,y,z);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  ship.add(mesh);
-  return mesh;
-}
+  // CASCO CURVO
+  var hullShape = new THREE.Shape();
+  hullShape.moveTo(0, -8);
+  hullShape.bezierCurveTo(1.8, -7.8, 2.3, -5, 2.2, -2);
+  hullShape.bezierCurveTo(2.1, 0.5, 1.6, 3, 0.9, 5.5);
+  hullShape.bezierCurveTo(0.5, 7, 0.15, 8, 0, 8.5);
+  hullShape.bezierCurveTo(-0.15, 8, -0.5, 7, -0.9, 5.5);
+  hullShape.bezierCurveTo(-1.6, 3, -2.1, 0.5, -2.2, -2);
+  hullShape.bezierCurveTo(-2.3, -5, -1.8, -7.8, 0, -8);
+  var hull = add(new THREE.Mesh(new THREE.ExtrudeGeometry(hullShape, {depth:1.8, bevelEnabled:true, bevelThickness:0.3, bevelSize:0.25, bevelSegments:2, curveSegments:16}), matHull));
+  hull.rotation.x = Math.PI/2; hull.position.y = -0.2;
 
-// 1. CASCO COM CURVA SUAVE - usa Shape + Extrude com bevel suave
-const hullShape = new THREE.Shape();
-hullShape.moveTo(0, -8);
-hullShape.bezierCurveTo(1.8, -7.8, 2.3, -5, 2.2, -2);
-hullShape.bezierCurveTo(2.1, 0.5, 1.6, 3, 0.9, 5.5);
-hullShape.bezierCurveTo(0.5, 7, 0.15, 8, 0, 8.5);
-hullShape.bezierCurveTo(-0.15, 8, -0.5, 7, -0.9, 5.5);
-hullShape.bezierCurveTo(-1.6, 3, -2.1, 0.5, -2.2, -2);
-hullShape.bezierCurveTo(-2.3, -5, -1.8, -7.8, 0, -8);
+  var waterline = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.18, 15.5), matRed);
+  waterline.position.set(0, -1.15, -0.2); ship.add(waterline);
 
-const hullGeo = new THREE.ExtrudeGeometry(hullShape, {depth:1.8, bevelEnabled:true, bevelThickness:0.4, bevelSize:0.3, bevelSegments:4, curveSegments:24});
-const hull = add(new THREE.Mesh(hullGeo, matHull));
-hull.rotation.x = Math.PI/2;
-hull.position.y = -0.2;
-hull.scale.set(1, 1, 1);
+  var deck = add(new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.2, 14.5), matDeck), 0, 0.95, 0);
 
-// Linha de flutuação vermelha
-const waterline = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.18, 15.5), matRed);
-waterline.position.set(0, -1.15, -0.2);
-ship.add(waterline);
+  // SUPERESTRUTURA INCLINADA
+  var superShape = new THREE.Shape();
+  superShape.moveTo(-4.5, 0); superShape.lineTo(-4.5, 1.1); superShape.lineTo(-2.8, 1.9);
+  superShape.lineTo(0.8, 1.9); superShape.lineTo(2.8, 0.9); superShape.lineTo(4.6, 0.9); superShape.lineTo(4.6, 0); superShape.closePath();
+  var superMesh = add(new THREE.Mesh(new THREE.ExtrudeGeometry(superShape, {depth:2.4, bevelEnabled:true, bevelThickness:0.1, bevelSize:0.1, bevelSegments:1}), matHull));
+  superMesh.rotation.y = Math.PI/2; superMesh.position.set(0, 1.0, -1.2);
 
-// 2. CONVÉS COM DETALHE
-const deckShape = new THREE.Shape();
-deckShape.moveTo(0, -7.4);
-deckShape.bezierCurveTo(1.6, -7.2, 2.0, -4, 1.9, -1);
-deckShape.bezierCurveTo(1.8, 2, 1.1, 4.5, 0.2, 7.2);
-deckShape.lineTo(0, 7.8);
-deckShape.lineTo(-0.2, 7.2);
-deckShape.bezierCurveTo(-1.1, 4.5, -1.8, 2, -1.9, -1);
-deckShape.bezierCurveTo(-2.0, -4, -1.6, -7.2, 0, -7.4);
-const deck = add(new THREE.Mesh(new THREE.ExtrudeGeometry(deckShape, {depth:0.2, bevelEnabled:false, curveSegments:24}), matDeck));
-deck.rotation.x = -Math.PI/2;
-deck.position.y = 0.95;
+  var bridgeShape = new THREE.Shape();
+  bridgeShape.moveTo(-2.2, 0); bridgeShape.lineTo(-2.2, 1.0); bridgeShape.lineTo(-0.8, 1.6);
+  bridgeShape.lineTo(1.2, 1.6); bridgeShape.lineTo(2.0, 0.8); bridgeShape.lineTo(2.0, 0); bridgeShape.closePath();
+  var bridge = add(new THREE.Mesh(new THREE.ExtrudeGeometry(bridgeShape, {depth:2.0, bevelEnabled:true, bevelThickness:0.08, bevelSize:0.08, bevelSegments:1}), matHull));
+  bridge.rotation.y = Math.PI/2; bridge.position.set(0, 2.75, -1.0);
 
-// 3. SUPERESTRUTURA STEALTH - forma inclinada realista
-// Parte principal - perfil lateral inclinado
-const superShape = new THREE.Shape();
-superShape.moveTo(-4.5, 0);
-superShape.lineTo(-4.5, 1.1);
-superShape.lineTo(-2.8, 1.9);
-superShape.lineTo(0.8, 1.9);
-superShape.lineTo(2.8, 0.9);
-superShape.lineTo(4.6, 0.9);
-superShape.lineTo(4.6, 0);
-superShape.closePath();
-const superGeo = new THREE.ExtrudeGeometry(superShape, {depth:2.4, bevelEnabled:true, bevelThickness:0.15, bevelSize:0.15, bevelSegments:2});
-const superMesh = add(new THREE.Mesh(superGeo, matHull));
-superMesh.rotation.y = Math.PI/2;
-superMesh.position.set(0, 1.0, -1.2);
+  var win = add(new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.28, 0.08), matGlass), 0, 3.55, 2.05);
+  win.rotation.x = -0.25;
 
-// Segunda camada - ponte
-const bridgeShape = new THREE.Shape();
-bridgeShape.moveTo(-2.2, 0);
-bridgeShape.lineTo(-2.2, 1.0);
-bridgeShape.lineTo(-0.8, 1.6);
-bridgeShape.line
+  // SENSORES
+  [-1.35, 1.35].forEach(function(x){
+    add(new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), matWhite), x, 2.2, 0.4);
+  });
+
+  // MASTRO
+  var mast = add(new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.9, 1.8, 4), matHull), 0, 4.8, -1.5);
+  mast.rotation.y = Math.PI/4;
+  var radarBar = add(new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.12, 0.18), matBlack), 0, 5.95, -1.5);
+  var antenna = add(new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.2, 6), matDark), 0, 6.5, -1.5);
+
+  // CANHÃO
+  var turret = add(new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.6, 0.5, 8), matHull), 0, 1.05, 4.4);
+  var barrel = add(new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.18, 2.4, 10), matBlack), 0, 1.45, 5.8);
+  barrel.rotation.x = Math.PI/2;
+
+  // VLS
+  for(var i=0;i<2;i++) for(var j=0;j<4;j++) add(new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.08, 0.35), matDark), -0.6 + j*0.4, 1.08, 3.0 + i*0.5);
+
+  // HELIPONTO
+  add(new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, 0.12, 20), matDark), 0, 1.08, -5.8);
+  var heliCircle = add(new THREE.Mesh(new THREE.RingGeometry(0.65, 0.85, 20), matWhite), 0, 1.15, -5.8);
+  heliCircle.rotation.x = -Math.PI/2;
+  var heliBody = add(new THREE.Mesh(new THREE.CapsuleGeometry(0.25, 0.8, 4, 8), matDark), 0, 1.45, -5.8);
+  heliBody.rotation.x = Math.PI/2;
+  var heliRotor = add(new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.05, 0.12), matBlack), 0, 1.85, -5.8);
+
+  // CHAMINÉS + BOTES
+  [-0.7, 0.7].forEach(function(x){ add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 1.2), matDark), x, 3.1, -3.2); });
+  [-1.4, 1.4].forEach(function(x){
+    var boat = add(new THREE.Mesh(new THREE.CapsuleGeometry(0.18, 0.7, 4, 8), matRed), x, 1.9, -2.8);
+    boat.rotation.x = Math.PI/2;
+  });
+
+  // NOME
+  var c = document.createElement('canvas'); c.width=512; c.height=128;
+  var ctx = c.getContext('2d');
+  ctx.fillStyle='rgba(10,20,35,0.85)'; ctx.fillRect(10,10,492,108);
+  ctx.fillStyle='#00d2d3'; ctx.font='bold 52px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('TARSO - F-101', 256, 64);
+  var spr = new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c), transparent:true}));
+  spr.position.set(0, 7.5, 0); spr.scale.set(8, 2, 1); ship.add(spr);
+
+  // ESCONDE LOADING AGORA QUE CARREGOU
+  document.getElementById('loading').style.display = 'none';
+
+  // CONTROLES SIMPLES - SEM OrbitControls
+  var targetPos = new THREE.Vector3(18, 8, 22);
+  window.setView = function(mode){
+    if(mode==='side') targetPos.set(20, 4, 0);
+    if(mode==='top') targetPos.set(0, 32, 0.01);
+    if(mode==='front') targetPos.set(0, 4, 20);
+  };
+
+  var drag=false, prev={x:0,y:0};
+  window.addEventListener('pointerdown', function(e){drag=true; prev={x:e.clientX,y:e.clientY}});
+  window.addEventListener('pointermove', function(e){if(!drag)return; ship.rotation.y += (e.clientX-prev.x)*0.01; prev={x:e.clientX,y:e.clientY}});
+  window.addEventListener('pointerup', function(){drag=false});
+
+  function animate(){
+    requestAnimationFrame(animate);
+    camera.position.lerp(targetPos, 0.08);
+    camera.lookAt(0, 1, 0);
+    if(!drag) ship.rotation.y += 0.002;
+    ship.position.y = Math.sin(Date.now()*0.0008)*0.12;
+    radarBar.rotation.y += 0.02;
+    heliRotor.rotation.y += 0.15;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', function(){
+    camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+});
+</script>
+</body>
+</html>
