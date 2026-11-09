@@ -1,48 +1,148 @@
-// NAVIO LEVE PRO JOGO - copia essa função pro seu jogo
-function createShipLeve(cor){
-  const g = new THREE.Group();
-  // Materiais sem sombra, sem brilho pesado
-  const cinza = new THREE.MeshStandardMaterial({color:0x8a8f96, roughness:0.7, metalness:0.2});
-  const escuro = new THREE.MeshStandardMaterial({color:0x23262b, roughness:0.7, metalness:0.2});
-  const preto = new THREE.MeshStandardMaterial({color:0x111111, roughness:0.7});
-  const vermelho = new THREE.MeshStandardMaterial({color:0xb02a1e, roughness:0.7});
-
-  // CASCO - só 1 forma, sem bevel pesado
-  const s = new THREE.Shape();
-  s.moveTo(0,-7); s.lineTo(1.8,-6.5); s.lineTo(2,-2); s.lineTo(1.3,3);
-  s.lineTo(0,7.5); s.lineTo(-1.3,3); s.lineTo(-2,-2); s.lineTo(-1.8,-6.5); s.closePath();
-  const casco = new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth:1.2, bevelEnabled:false}), cinza);
-  casco.rotation.x = Math.PI/2;
-  g.add(casco);
-
-  // CONVÉS - 1 caixa só
-  const deck = new THREE.Mesh(new THREE.BoxGeometry(3,0.2,12), new THREE.MeshStandardMaterial({color:cor}));
-  deck.position.y = 0.7;
-  g.add(deck);
-
-  // SUPERESTRUTURA - 2 caixas, sem Extrude
-  const sup = new THREE.Mesh(new THREE.BoxGeometry(2,1.2,4), cinza);
-  sup.position.set(0,1.4,-1); sup.rotation.x = -0.05; g.add(sup);
-  const ponte = new THREE.Mesh(new THREE.BoxGeometry(1.6,0.9,1.8), cinza);
-  ponte.position.set(0,2.3,-0.2); g.add(ponte);
-
-  // Janela
-  const win = new THREE.Mesh(new THREE.BoxGeometry(1.5,0.2,0.1), preto);
-  win.position.set(0,2.5,0.75); g.add(win);
-
-  // Mastro - 1 cilindro só
-  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.15,1.5,6), escuro);
-  mast.position.set(0,3.4,-1.2); g.add(mast);
-
-  // Canhão
-  const tur = new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.55,0.4,6), cinza);
-  tur.position.set(0,0.9,4.2); g.add(tur);
-  const cano = new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.12,1.8,6), preto);
-  cano.rotation.x = Math.PI/2; cano.position.set(0,1,5.2); g.add(cano);
-
-  // Heliponto
-  const heli = new THREE.Mesh(new THREE.CylinderGeometry(0.85,0.85,0.1,10), vermelho);
-  heli.position.set(0,0.85,-4.8); g.add(heli);
-
-  return g;
-}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tidal Warfare 3D - Smart TV & Mobile Edition</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{background:#050b14;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;color:#fff}
+.lobby-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(5,11,20,0.96);backdrop-filter:blur(12px);z-index:100;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;transition:opacity 0.3s ease}
+.lobby-screen.hidden{opacity:0;pointer-events:none}
+.lobby-title{font-size:24px;font-weight:900;background:linear-gradient(90deg,#00a8ff,#00d2d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;text-align:center}
+.lobby-subtitle{font-size:13px;color:#8899ac;margin-bottom:16px;font-weight:600;text-align:center}
+.lobby-input{background:rgba(10,20,35,0.9);border:1.5px solid #00d2d3;color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;outline:none;width:100%;margin-bottom:10px;text-align:center}
+.lobby-btn{background:rgba(0,168,255,0.2);border:1.5px solid #00d2d3;color:#fff;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin:6px;width:280px;box-shadow:0 4px 15px rgba(0,0,0,0.4);transition:all 0.2s}
+.lobby-btn:active, .lobby-btn:focus{transform:scale(0.95);background:rgba(0,168,255,0.5);outline:2px solid #fff}
+.lobby-info{font-size:11px;color:#8899ac;margin-top:14px;font-weight:600;text-align:center;max-width:340px;line-height:1.4;background:rgba(0,168,255,0.08);padding:10px;border-radius:8px;border:1px solid rgba(0,168,255,0.2)}
+.profile-btn{position:absolute;top:15px;left:15px;background:rgba(10,20,35,0.85);border:1.5px solid #00d2d3;color:#00d2d3;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:800;z-index:110;cursor:pointer;backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(0,0,0,.5)}
+.profile-btn:active{transform:scale(0.95);background:rgba(0,168,255,.3)}
+.rooms-sidebar{position:absolute;top:0;right:-320px;width:320px;height:100%;background:rgba(10,20,35,0.98);border-left:2px solid #00d2d3;z-index:110;box-shadow:-10px 0 30px rgba(0,0,0,0.8);backdrop-filter:blur(12px);display:flex;flex-direction:column;padding:20px;transition:right 0.3s ease}
+.rooms-sidebar.show{right:0}
+.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid rgba(0,168,255,0.3);padding-bottom:10px}
+.sidebar-title{font-size:14px;font-weight:900;color:#00d2d3}
+.sidebar-close{background:none;border:none;color:#8899ac;font-size:18px;font-weight:bold;cursor:pointer}
+.sidebar-close:hover{color:#fff}
+.rooms-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.room-item{padding:12px 14px;background:rgba(0,168,255,0.15);border:1.5px solid #00d2d3;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s}
+.room-item:hover{background:rgba(0,168,255,0.35);transform:scale(1.02)}
+.profile-modal{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(0.9);background:rgba(10,20,35,0.96);border:1.5px solid #00d2d3;padding:20px;border-radius:16px;z-index:120;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all 0.2s ease;max-width:340px;width:90%}
+.profile-modal.show{opacity:1;transform:translate(-50%, -50%) scale(1);pointer-events:auto}
+.ship-styles-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:8px;margin:12px 0;max-height:160px;overflow-y:auto}
+.ship-style-card{background:rgba(20,35,55,0.7);border:1.5px solid rgba(0,168,255,0.3);border-radius:10px;padding:8px;cursor:pointer;font-size:11px;font-weight:700;color:#8899ac;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all 0.15s}
+.ship-style-card.selected{border-color:#00d2d3;background:rgba(0,168,255,0.25);color:#fff;transform:scale(1.02)}
+.hud-top{position:absolute;top:10px;left:0;width:100%;padding:0 16px;display:flex;justify-content:space-between;align-items:center;z-index:20;pointer-events:none}
+.res-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;background:rgba(10,20,35,0.75);backdrop-filter:blur(6px);padding:6px 12px;border-radius:20px;border:1px solid rgba(0,168,255,0.3);pointer-events:auto;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+.center-title{text-align:center;font-weight:900;font-size:13px;letter-spacing:1px;background:linear-gradient(90deg,#00a8ff,#00d2d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 10px rgba(0,0,0,0.8)}
+.hud-bottom-health{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:240px;background:rgba(10,20,35,0.85);border:1.5px solid rgba(0,168,255,0.4);padding:8px 12px;border-radius:14px;z-index:25;backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:4px;box-shadow:0 4px 15px rgba(0,0,0,0.5)}
+.health-bar-container{width:100%;height:10px;background:rgba(255,255,255,0.1);border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.health-bar-fill{width:100%;height:100%;transition:width 0.2s ease, background-color 0.3s ease}
+.health-text{font-size:10px;font-weight:800;color:#fff;text-align:center}
+.game-container{flex:1;position:relative;width:100%;min-height:0;touch-action:none}
+#canvas3d{width:100%;height:100%;display:block}
+.torpedo-btn{position:absolute;top:65px;right:20px;background:rgba(10,20,35,0.85);border:1.5px solid #00d2d3;color:#00d2d3;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:800;z-index:25;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 4px 15px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px}
+.torpedo-btn:active{transform:scale(0.95);background:rgba(0,168,255,.3)}
+.fpp-btn{position:absolute;top:115px;right:20px;background:rgba(10,20,35,0.85);border:1.5px solid #ffd700;color:#ffd700;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:800;z-index:25;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 4px 15px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px}
+.fpp-btn:active{transform:scale(0.95);background:rgba(255,215,0,.3)}
+.defense-btn{position:absolute;bottom:85px;left:25px;background:rgba(255,51,51,0.25);border:1.5px solid #ff3333;color:#ff6666;padding:12px 16px;border-radius:16px;font-size:12px;font-weight:900;z-index:25;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 4px 15px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px}
+.defense-btn:active{transform:scale(0.92);background:rgba(255,51,51,0.5)}
+.target-modal{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(0.9);background:rgba(10,20,35,0.95);border:1.5px solid #00d2d3;padding:20px 24px;border-radius:16px;z-index:40;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all 0.2s ease}
+.target-modal.show{opacity:1;transform:translate(-50%, -50%) scale(1);pointer-events:auto}
+.modal-title{font-size:14px;font-weight:900;color:#00d2d3;margin-bottom:6px;letter-spacing:0.5px}
+.modal-desc{font-size:11px;color:#8899ac;margin-bottom:14px;font-weight:600}
+.target-options-bar{display:flex;justify-content:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.target-option-card{background:rgba(20,35,55,0.8);border:1.5px solid rgba(0,168,255,0.4);border-radius:10px;padding:8px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s;min-width:70px}
+.target-option-card:hover, .target-option-card.selected{border-color:#00d2d3;background:rgba(0,168,255,0.25);transform:scale(1.05)}
+.ship-color-icon{width:22px;height:22px;border-radius:50%;border:1px solid #fff}
+.target-option-card span{font-size:10px;font-weight:700;color:#fff}
+.modal-actions{display:flex;gap:10px;justify-content:center}
+.btn-action{background:rgba(0,168,255,0.2);border:1px solid #00d2d3;color:#fff;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-action:active{background:rgba(0,168,255,0.5)}
+.btn-confirm{background:rgba(0,211,100,0.25);border-color:#00d364}
+.modal-close{position:absolute;top:8px;right:12px;background:none;border:none;color:#8899ac;font-size:16px;font-weight:bold;cursor:pointer}
+.modal-close:hover{color:#fff}
+.gameover-modal{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(0.9);background:rgba(10,20,35,0.95);border:1.5px solid #00d2d3;padding:24px;border-radius:16px;z-index:50;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all 0.3s ease}
+.gameover-modal.show{opacity:1;transform:translate(-50%, -50%) scale(1);pointer-events:auto}
+.gameover-title{font-size:18px;font-weight:900;color:#00d2d3;margin-bottom:8px}
+.gameover-desc{font-size:12px;color:#8899ac;margin-bottom:20px;font-weight:600}
+.zoom-controls{position:absolute;top:165px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:25}
+.zoom-btn{width:36px;height:36px;background:rgba(10,20,35,0.85);border:1.5px solid #00d2d3;color:#00d2d3;border-radius:50%;font-size:16px;font-weight:900;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.5)}
+.zoom-btn:active{background:rgba(0,168,255,.4)}
+.tv-remote{position:absolute;bottom:25px;right:25px;width:140px;height:140px;background:rgba(15,25,45,0.35);backdrop-filter:blur(6px);border:1.5px solid rgba(0,168,255,0.25);border-radius:50%;display:grid;grid-template-columns:repeat(3, 1fr);grid-template-rows:repeat(3, 1fr);align-items:center;justify-items:center;z-index:25;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.rc-btn{width:38px;height:38px;background:rgba(0,168,255,0.2);border:1px solid rgba(0,168,255,0.4);color:#00d2d3;border-radius:8px;font-size:15px;font-weight:900;display:flex;justify-content:center;align-items:center;cursor:pointer;transition:all 0.1s}
+.rc-btn:active, .rc-btn.pressed{background:rgba(0,168,255,0.6);transform:scale(0.92)}
+.rc-up{grid-column:2;grid-row:1}
+.rc-left{grid-column:1;grid-row:2}
+.rc-center{grid-column:2;grid-row:2;width:32px;height:32px;background:rgba(255,215,0,0.25);border:1px solid rgba(255,215,0,0.5);border-radius:50%;font-size:11px;color:#ffd700}
+.rc-right{grid-column:3;grid-row:2}
+.rc-down{grid-column:2;grid-row:3}
+.toast-msg{position:absolute;bottom:75px;left:50%;transform:translateX(-50%);background:rgba(10,20,35,.9);border:1px solid #00d2d3;color:#fff;padding:8px 16px;border-radius:20px;font-size:11px;font-weight:700;z-index:30;box-shadow:0 4px 15px rgba(0,0,0,.6);opacity:0;transition:opacity 0.3s;pointer-events:none;text-align:center}
+.toast-msg.show{opacity:1}
+</style>
+</head>
+<body oncontextmenu="return false;">
+<button class="profile-btn" id="btnOpenProfile">👤 <span id="profileNameDisplay">Comandante</span></button>
+<div class="rooms-sidebar" id="roomsSidebar">
+  <div class="sidebar-header"><div class="sidebar-title">🌐 SALAS DISPONÍVEIS NA REDE</div><button class="sidebar-close" id="btnCloseSidebar">✕</button></div>
+  <div class="rooms-list" id="roomsContainer"><div style="padding:15px;text-align:center;font-size:11px;color:#8899ac;">Buscando salas abertas automaticamente...</div></div>
+</div>
+<div class="profile-modal" id="profileModal">
+  <div class="modal-title">PERFIL DO COMANDANTE</div>
+  <div class="modal-desc" style="margin-bottom:8px;">Seu nome:</div>
+  <input type="text" id="profileNameInput" class="lobby-input" placeholder="Seu nome..." maxlength="15">
+  <div class="modal-desc" style="margin:10px 0 6px 0;">Escolha o Estilo do Navio:</div>
+  <div class="ship-styles-grid" id="shipStylesGrid">
+    <div class="ship-style-card selected" data-style="frigate"><span>⛵ Padrão (Fragata)</span></div>
+    <div class="ship-style-card" data-style="destroyer"><span>🚀 Destróier (Ágil)</span></div>
+    <div class="ship-style-card" data-style="cruiser"><span>⚓ Cruzador (Equilibrado)</span></div>
+    <div class="ship-style-card" data-style="battleship"><span>🛡️ Couraçado (Pesado)</span></div>
+  </div>
+  <div class="modal-actions" style="margin-top:12px;"><button class="btn-action" id="btnCancelProfile">Cancelar</button><button class="btn-action btn-confirm" id="btnSaveProfile">Salvar</button></div>
+</div>
+<div class="lobby-screen" id="lobbyScreen">
+  <div class="lobby-title">⚓ TIDAL WARFARE 3D</div>
+  <div class="lobby-subtitle">Multiplayer Local Dinâmico</div>
+  <button class="lobby-btn" id="btnCreateRoom" tabindex="1">Criar Sala (Host Local)</button>
+  <button class="lobby-btn" id="btnOpenRoomsSidebar" tabindex="2">Buscar Salas na Rede</button>
+  <button class="lobby-btn" id="btnStartGameManual" tabindex="3" style="display:none; background:rgba(0,211,100,0.3); border-color:#00d364;">Iniciar Jogo</button>
+  <div class="lobby-info" id="lobbyInfoStatus">📶 <b>Como Jogar:</b><br>• Crie sua sala ou busque salas abertas na rede.<br>• Conecte-se e aguarde o início da partida.<br>• <b>Tecla 0</b> = Soltar Carga Explosiva na Popa (Auto-destrói em 30s)</div>
+</div>
+<div class="hud-top">
+  <div class="res-item"><span>🛡️ <span style="color:#00d2d3" id="playerHealthText">100%</span></span><span style="margin-left:8px;" id="timeBadge">☀️ 00:00</span></div>
+  <div class="center-title" id="hudPlayerName">⚓ TIDAL WARFARE 3D</div>
+  <div class="res-item"><span>🚀 <span style="color:#00d2d3" id="torpedoCount">10/10</span></span></div>
+</div>
+<div class="hud-bottom-health" id="hudBottomHealth"><div class="health-text" id="healthBarLabel">BLINDAGEM DO NAVIO: 100%</div><div class="health-bar-container"><div class="health-bar-fill" id="healthBarFill" style="width: 100%; background-color: #e74c3c;"></div></div></div>
+<div class="game-container" id="gameContainer">
+  <canvas id="canvas3d"></canvas>
+  <button class="torpedo-btn" id="btnTorpedo">🎯 Selecionar Alvo</button>
+  <button class="fpp-btn" id="btnFPP">👁️ Câmera 1ª Pessoa</button>
+  <button class="defense-btn" id="btnDropDefense">💣 Soltar Explosivo (Tecla 0)</button>
+  <div class="zoom-controls"><button class="zoom-btn" id="btnZoomIn" title="Aproximar Zoom">+</button><button class="zoom-btn" id="btnZoomOut" title="Afastar Zoom">-</button></div>
+  <div class="target-modal" id="targetModal"><button class="modal-close" id="btnCloseModal">✕</button><div class="modal-title">SELECIONAR ALVO DO TORPEDO</div><div class="modal-desc">Escolha o alvo para disparo:</div><div class="target-options-bar" id="targetOptionsBar"></div><div class="modal-actions"><button class="btn-action btn-confirm" id="btnConfirmLaunch">Confirmar Disparo (OK / 5)</button></div></div>
+  <div class="gameover-modal" id="gameOverModal"><div class="gameover-title" id="gameOverTitle">NAVIO DESTRUÍDO!</div><div class="gameover-desc" id="gameOverDesc">A batalha chegou ao fim.</div><div class="modal-actions" id="gameOverActions"><button class="btn-action btn-confirm" id="btnWatchMode">Assistir Partida</button><button class="btn-action" style="border-color:#ff3333; color:#ff3333;" id="btnExitGame">Sair para o Menu</button></div></div>
+  <div class="tv-remote"><button class="rc-btn rc-up" id="btnUp" title="Tecla 2">▲</button><button class="rc-btn rc-left" id="btnLeft" title="Tecla 4">◀</button><div class="rc-btn rc-center" id="btnCenter" title="Parar / Câmera Livre (OK / 5)">OK</div><button class="rc-btn rc-right" id="btnRight" title="Tecla 6">▶</button><button class="rc-btn rc-down" id="btnDown" title="Tecla 8">▼</button></div>
+  <div class="toast-msg" id="toastMsg">Sistema pronto!</div>
+</div>
+<script>
+let audioCtx = null;
+function initAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
+function playSound(type){ try{ initAudio(); if(!audioCtx) return; const now=audioCtx.currentTime; if(type==='shot'){ const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.type='triangle'; osc.frequency.setValueAtTime(300,now); osc.frequency.exponentialRampToValueAtTime(40,now+0.3); gain.gain.setValueAtTime(0.5,now); gain.gain.linearRampToValueAtTime(0.01,now+0.3); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now+0.3);} else if(type==='torpedo'){ const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.type='sine'; osc.frequency.setValueAtTime(600,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.5); gain.gain.setValueAtTime(0.3,now); gain.gain.linearRampToValueAtTime(0.01,now+0.5); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now+0.5);} else if(type==='explosion'){ const bufferSize=audioCtx.sampleRate*0.8; const buffer=audioCtx.createBuffer(1,bufferSize,audioCtx.sampleRate); const output=buffer.getChannelData(0); for(let i=0;i<bufferSize;i++) output[i]=Math.random()*2-1; const whiteNoise=audioCtx.createBufferSource(); whiteNoise.buffer=buffer; const filter=audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.setValueAtTime(800,now); filter.frequency.linearRampToValueAtTime(50,now+0.8); const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.8,now); gain.gain.linearRampToValueAtTime(0.01,now+0.8); whiteNoise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); whiteNoise.start(now); whiteNoise.stop(now+0.8);} }catch(e){} }
+let playerName = localStorage.getItem('tidal_player_name') || "Comandante_" + Math.floor(Math.random()*900+100);
+let selectedShipStyle = localStorage.getItem('tidal_ship_style') || "frigate";
+document.getElementById('profileNameDisplay').textContent = playerName;
+document.querySelectorAll('.ship-style-card').forEach(card => { if(card.dataset.style===selectedShipStyle){ document.querySelectorAll('.ship-style-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); } card.onclick=()=>{ document.querySelectorAll('.ship-style-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); selectedShipStyle=card.dataset.style; }; });
+const profileModal=document.getElementById('profileModal');
+document.getElementById('btnOpenProfile').onclick=()=>{ initAudio(); document.getElementById('profileNameInput').value=playerName; profileModal.classList.add('show'); };
+document.getElementById('btnCancelProfile').onclick=()=>profileModal.classList.remove('show');
+document.getElementById('btnSaveProfile').onclick=()=>{ const val=document.getElementById('profileNameInput').value.trim(); if(val){ playerName=val; localStorage.setItem('tidal_player_name',playerName); document.getElementById('profileNameDisplay').textContent=playerName; } localStorage.setItem('tidal_ship_style',selectedShipStyle); showToast("💾 Perfil salvo!"); profileModal.classList.remove('show'); };
+let peer=null; let conn=null; let connectedPeers=[]; let remotePlayersMap=new Map(); let isHost=false; const maxPlayers=4;
+const lobbyScreen=document.getElementById('lobbyScreen'); const lobbyInfoStatus=document.getElementById('lobbyInfoStatus'); const roomsContainer=document.getElementById('roomsContainer'); const btnStartGameManual=document.getElementById('btnStartGameManual'); const roomsSidebar=document.getElementById('roomsSidebar');
+const roomPrefix="tidal_net_v5_";
+document.getElementById('btnOpenRoomsSidebar').onclick=()=>{ initAudio(); roomsSidebar.classList.add('show'); scanAvailableRoomsAutomatically(); };
+document.getElementById('btnCloseSidebar').onclick=()=>roomsSidebar.classList.remove('show');
+let gameStarted=false;
+function updateHostButtonState(){ const totalConnected=connectedPeers.length+1; btnStartGameManual.textContent=`Iniciar Jogo (${totalConnected} Jogador${totalConnected>1?'es':''})`; btnStartGameManual.style.display="block"; }
+document.getElementById('btnCreateRoom').onclick=()=>{ initAudio(); document.getElementById('hudPlayerName').textContent=`⚓ ${playerName}`; const cleanName=playerName.replace(/[^a-zA-Z0-9]/g,'_'); const fullRoomId=roomPrefix+cleanName+"_"+Math.floor(Math.random()*1000); isHost=true; if(peer && !peer.destroyed) peer.destroy(); peer=new Peer(fullRoomId,{config:{'iceServers':[{urls:'stun:stun.l.google.com:19302'}]}}); peer.on('open',(id)=>{ localStorage.setItem('tidal_my_room_id',id); lobbyInfoStatus.innerHTML=`<b style="color:#00d2d3;">SALA CRIADA NA REDE!</b><br>Outros aparelhos já podem buscar sua sala na barra lateral.`; updateHostButtonState(); showToast(`📡 Sala ativa: ${playerName}`); }); peer.on('connection',(incomingConn)=>{ if(connectedPeers.length>=maxPlayers-1){ incomingConn.on('open',()=>{ incomingConn.send({type:'FULL'}); }); return; } connectedPeers.push(incomingConn); lobbyInfoStatus.innerHTML=`
