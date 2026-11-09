@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,16 +10,19 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
 html,body{background:#050b14;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;color:#fff}
+
 .lobby-screen{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(5,11,20,0.96);backdrop-filter:blur(12px);z-index:100;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;transition:opacity 0.3s ease}
 .lobby-screen.hidden{opacity:0;pointer-events:none}
-.lobby-title{font-size:24px;font-weight:900;background:linear-gradient(90deg,#00a8ff,#00d2d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;text-align:center}
-.lobby-subtitle{font-size:13px;color:#8899ac;margin-bottom:16px;font-weight:600;text-align:center}
+.lobby-title{font-size:26px;font-weight:900;background:linear-gradient(90deg,#00a8ff,#00d2d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;text-align:center}
+.lobby-subtitle{font-size:13px;color:#8899ac;margin-bottom:20px;font-weight:600;text-align:center}
 .lobby-input{background:rgba(10,20,35,0.9);border:1.5px solid #00d2d3;color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;outline:none;width:100%;margin-bottom:10px;text-align:center}
 .lobby-btn{background:rgba(0,168,255,0.2);border:1.5px solid #00d2d3;color:#fff;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;margin:6px;width:280px;box-shadow:0 4px 15px rgba(0,0,0,0.4);transition:all 0.2s}
 .lobby-btn:active, .lobby-btn:focus{transform:scale(0.95);background:rgba(0,168,255,0.5);outline:2px solid #fff}
 .lobby-info{font-size:11px;color:#8899ac;margin-top:14px;font-weight:600;text-align:center;max-width:340px;line-height:1.4;background:rgba(0,168,255,0.08);padding:10px;border-radius:8px;border:1px solid rgba(0,168,255,0.2)}
+
 .profile-btn{position:absolute;top:15px;left:15px;background:rgba(10,20,35,0.85);border:1.5px solid #00d2d3;color:#00d2d3;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:800;z-index:110;cursor:pointer;backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(0,0,0,.5)}
 .profile-btn:active{transform:scale(0.95);background:rgba(0,168,255,.3)}
+
 .rooms-sidebar{position:absolute;top:0;right:-320px;width:320px;height:100%;background:rgba(10,20,35,0.98);border-left:2px solid #00d2d3;z-index:110;box-shadow:-10px 0 30px rgba(0,0,0,0.8);backdrop-filter:blur(12px);display:flex;flex-direction:column;padding:20px;transition:right 0.3s ease}
 .rooms-sidebar.show{right:0}
 .sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid rgba(0,168,255,0.3);padding-bottom:10px}
@@ -28,26 +32,32 @@ html,body{background:#050b14;width:100vw;height:100vh;height:100dvh;display:flex
 .rooms-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
 .room-item{padding:12px 14px;background:rgba(0,168,255,0.15);border:1.5px solid #00d2d3;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s}
 .room-item:hover{background:rgba(0,168,255,0.35);transform:scale(1.02)}
+
 .profile-modal{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(0.9);background:rgba(10,20,35,0.96);border:1.5px solid #00d2d3;padding:20px;border-radius:16px;z-index:120;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all 0.2s ease;max-width:340px;width:90%}
 .profile-modal.show{opacity:1;transform:translate(-50%, -50%) scale(1);pointer-events:auto}
 .ship-styles-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:8px;margin:12px 0;max-height:160px;overflow-y:auto}
 .ship-style-card{background:rgba(20,35,55,0.7);border:1.5px solid rgba(0,168,255,0.3);border-radius:10px;padding:8px;cursor:pointer;font-size:11px;font-weight:700;color:#8899ac;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all 0.15s}
 .ship-style-card.selected{border-color:#00d2d3;background:rgba(0,168,255,0.25);color:#fff;transform:scale(1.02)}
+
 .hud-top{position:absolute;top:10px;left:0;width:100%;padding:0 16px;display:flex;justify-content:space-between;align-items:center;z-index:20;pointer-events:none}
 .res-item{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;background:rgba(10,20,35,0.75);backdrop-filter:blur(6px);padding:6px 12px;border-radius:20px;border:1px solid rgba(0,168,255,0.3);pointer-events:auto;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
 .center-title{text-align:center;font-weight:900;font-size:13px;letter-spacing:1px;background:linear-gradient(90deg,#00a8ff,#00d2d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 10px rgba(0,0,0,0.8)}
+
 .hud-bottom-health{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:240px;background:rgba(10,20,35,0.85);border:1.5px solid rgba(0,168,255,0.4);padding:8px 12px;border-radius:14px;z-index:25;backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:4px;box-shadow:0 4px 15px rgba(0,0,0,0.5)}
 .health-bar-container{width:100%;height:10px;background:rgba(255,255,255,0.1);border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
 .health-bar-fill{width:100%;height:100%;transition:width 0.2s ease, background-color 0.3s ease}
 .health-text{font-size:10px;font-weight:800;color:#fff;text-align:center}
+
 .game-container{flex:1;position:relative;width:100%;min-height:0;touch-action:none}
 #canvas3d{width:100%;height:100%;display:block}
+
 .torpedo-btn{position:absolute;top:65px;right:20px;background:rgba(10,20,35,0.85);border:1.5px solid #00d2d3;color:#00d2d3;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:800;z-index:25;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 4px 15px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px}
 .torpedo-btn:active{transform:scale(0.95);background:rgba(0,168,255,.3)}
 .fpp-btn{position:absolute;top:115px;right:20px;background:rgba(10,20,35,0.85);border:1.5px solid #ffd700;color:#ffd700;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:800;z-index:25;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 4px 15px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px}
 .fpp-btn:active{transform:scale(0.95);background:rgba(255,215,0,.3)}
 .defense-btn{position:absolute;bottom:85px;left:25px;background:rgba(255,51,51,0.25);border:1.5px solid #ff3333;color:#ff6666;padding:12px 16px;border-radius:16px;font-size:12px;font-weight:900;z-index:25;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 4px 15px rgba(0,0,0,.5);display:flex;align-items:center;gap:6px}
 .defense-btn:active{transform:scale(0.92);background:rgba(255,51,51,0.5)}
+
 .target-modal{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(0.9);background:rgba(10,20,35,0.95);border:1.5px solid #00d2d3;padding:20px 24px;border-radius:16px;z-index:40;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all 0.2s ease}
 .target-modal.show{opacity:1;transform:translate(-50%, -50%) scale(1);pointer-events:auto}
 .modal-title{font-size:14px;font-weight:900;color:#00d2d3;margin-bottom:6px;letter-spacing:0.5px}
@@ -63,13 +73,16 @@ html,body{background:#050b14;width:100vw;height:100vh;height:100dvh;display:flex
 .btn-confirm{background:rgba(0,211,100,0.25);border-color:#00d364}
 .modal-close{position:absolute;top:8px;right:12px;background:none;border:none;color:#8899ac;font-size:16px;font-weight:bold;cursor:pointer}
 .modal-close:hover{color:#fff}
+
 .gameover-modal{position:absolute;top:50%;left:50%;transform:translate(-50%, -50%) scale(0.9);background:rgba(10,20,35,0.95);border:1.5px solid #00d2d3;padding:24px;border-radius:16px;z-index:50;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all 0.3s ease}
 .gameover-modal.show{opacity:1;transform:translate(-50%, -50%) scale(1);pointer-events:auto}
 .gameover-title{font-size:18px;font-weight:900;color:#00d2d3;margin-bottom:8px}
 .gameover-desc{font-size:12px;color:#8899ac;margin-bottom:20px;font-weight:600}
+
 .zoom-controls{position:absolute;top:165px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:25}
 .zoom-btn{width:36px;height:36px;background:rgba(10,20,35,0.85);border:1.5px solid #00d2d3;color:#00d2d3;border-radius:50%;font-size:16px;font-weight:900;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.5)}
 .zoom-btn:active{background:rgba(0,168,255,.4)}
+
 .tv-remote{position:absolute;bottom:25px;right:25px;width:140px;height:140px;background:rgba(15,25,45,0.35);backdrop-filter:blur(6px);border:1.5px solid rgba(0,168,255,0.25);border-radius:50%;display:grid;grid-template-columns:repeat(3, 1fr);grid-template-rows:repeat(3, 1fr);align-items:center;justify-items:center;z-index:25;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
 .rc-btn{width:38px;height:38px;background:rgba(0,168,255,0.2);border:1px solid rgba(0,168,255,0.4);color:#00d2d3;border-radius:8px;font-size:15px;font-weight:900;display:flex;justify-content:center;align-items:center;cursor:pointer;transition:all 0.1s}
 .rc-btn:active, .rc-btn.pressed{background:rgba(0,168,255,0.6);transform:scale(0.92)}
@@ -78,71 +91,984 @@ html,body{background:#050b14;width:100vw;height:100vh;height:100dvh;display:flex
 .rc-center{grid-column:2;grid-row:2;width:32px;height:32px;background:rgba(255,215,0,0.25);border:1px solid rgba(255,215,0,0.5);border-radius:50%;font-size:11px;color:#ffd700}
 .rc-right{grid-column:3;grid-row:2}
 .rc-down{grid-column:2;grid-row:3}
+
 .toast-msg{position:absolute;bottom:75px;left:50%;transform:translateX(-50%);background:rgba(10,20,35,.9);border:1px solid #00d2d3;color:#fff;padding:8px 16px;border-radius:20px;font-size:11px;font-weight:700;z-index:30;box-shadow:0 4px 15px rgba(0,0,0,.6);opacity:0;transition:opacity 0.3s;pointer-events:none;text-align:center}
 .toast-msg.show{opacity:1}
 </style>
 </head>
 <body oncontextmenu="return false;">
+
 <button class="profile-btn" id="btnOpenProfile">👤 <span id="profileNameDisplay">Comandante</span></button>
+
 <div class="rooms-sidebar" id="roomsSidebar">
-  <div class="sidebar-header"><div class="sidebar-title">🌐 SALAS DISPONÍVEIS NA REDE</div><button class="sidebar-close" id="btnCloseSidebar">✕</button></div>
-  <div class="rooms-list" id="roomsContainer"><div style="padding:15px;text-align:center;font-size:11px;color:#8899ac;">Buscando salas abertas automaticamente...</div></div>
+  <div class="sidebar-header">
+    <div class="sidebar-title">🌐 SALAS DISPONÍVEIS</div>
+    <button class="sidebar-close" id="btnCloseSidebar">✕</button>
+  </div>
+  <div class="rooms-list" id="roomsContainer">
+    <div style="padding:15px;text-align:center;font-size:11px;color:#8899ac;">Buscando salas...</div>
+  </div>
 </div>
+
 <div class="profile-modal" id="profileModal">
   <div class="modal-title">PERFIL DO COMANDANTE</div>
   <div class="modal-desc" style="margin-bottom:8px;">Seu nome:</div>
   <input type="text" id="profileNameInput" class="lobby-input" placeholder="Seu nome..." maxlength="15">
   <div class="modal-desc" style="margin:10px 0 6px 0;">Escolha o Estilo do Navio:</div>
   <div class="ship-styles-grid" id="shipStylesGrid">
-    <div class="ship-style-card selected" data-style="frigate"><span>⛵ Padrão (Fragata)</span></div>
-    <div class="ship-style-card" data-style="destroyer"><span>🚀 Destróier (Ágil)</span></div>
-    <div class="ship-style-card" data-style="cruiser"><span>⚓ Cruzador (Equilibrado)</span></div>
-    <div class="ship-style-card" data-style="battleship"><span>🛡️ Couraçado (Pesado)</span></div>
+    <div class="ship-style-card selected" data-style="frigate"><span>⛵ Fragata</span></div>
+    <div class="ship-style-card" data-style="destroyer"><span>🚀 Destróier</span></div>
+    <div class="ship-style-card" data-style="cruiser"><span>⚓ Cruzador</span></div>
+    <div class="ship-style-card" data-style="battleship"><span>🛡️ Couraçado</span></div>
   </div>
-  <div class="modal-actions" style="margin-top:12px;"><button class="btn-action" id="btnCancelProfile">Cancelar</button><button class="btn-action btn-confirm" id="btnSaveProfile">Salvar</button></div>
+  <div class="modal-actions" style="margin-top:12px;">
+    <button class="btn-action" id="btnCancelProfile">Cancelar</button>
+    <button class="btn-action btn-confirm" id="btnSaveProfile">Salvar</button>
+  </div>
 </div>
+
 <div class="lobby-screen" id="lobbyScreen">
   <div class="lobby-title">⚓ TIDAL WARFARE 3D</div>
-  <div class="lobby-subtitle">Multiplayer Local Dinâmico</div>
-  <button class="lobby-btn" id="btnCreateRoom" tabindex="1">Criar Sala (Host Local)</button>
-  <button class="lobby-btn" id="btnOpenRoomsSidebar" tabindex="2">Buscar Salas na Rede</button>
-  <button class="lobby-btn" id="btnStartGameManual" tabindex="3" style="display:none; background:rgba(0,211,100,0.3); border-color:#00d364;">Iniciar Jogo</button>
-  <div class="lobby-info" id="lobbyInfoStatus">📶 <b>Como Jogar:</b><br>• Crie sua sala ou busque salas abertas na rede.<br>• Conecte-se e aguarde o início da partida.<br>• <b>Tecla 0</b> = Soltar Carga Explosiva na Popa (Auto-destrói em 30s)</div>
+  <div class="lobby-subtitle">Batalha Naval 3D Dinâmica</div>
+  <button class="lobby-btn" id="btnCreateRoom">Criar Sala (Host)</button>
+  <button class="lobby-btn" id="btnOpenRoomsSidebar">Buscar Salas na Rede</button>
+  <button class="lobby-btn" id="btnStartGameManual" style="display:none; background:rgba(0,211,100,0.3); border-color:#00d364;">Iniciar Jogo Solo / Lobby</button>
+  <div class="lobby-info" id="lobbyInfoStatus">
+    📶 <b>Como Jogar:</b><br>
+    • Crie sua sala ou inicie uma partida contra IA.<br>
+    • Controles: Setas / Teclas 2, 4, 6, 8 e Enter / OK.<br>
+    • <b>Tecla 0</b> = Soltar Carga Explosiva na Popa
+  </div>
 </div>
+
 <div class="hud-top">
   <div class="res-item"><span>🛡️ <span style="color:#00d2d3" id="playerHealthText">100%</span></span><span style="margin-left:8px;" id="timeBadge">☀️ 00:00</span></div>
   <div class="center-title" id="hudPlayerName">⚓ TIDAL WARFARE 3D</div>
   <div class="res-item"><span>🚀 <span style="color:#00d2d3" id="torpedoCount">10/10</span></span></div>
 </div>
-<div class="hud-bottom-health" id="hudBottomHealth"><div class="health-text" id="healthBarLabel">BLINDAGEM DO NAVIO: 100%</div><div class="health-bar-container"><div class="health-bar-fill" id="healthBarFill" style="width: 100%; background-color: #e74c3c;"></div></div></div>
+
+<div class="hud-bottom-health" id="hudBottomHealth">
+  <div class="health-text" id="healthBarLabel">BLINDAGEM DO NAVIO: 100%</div>
+  <div class="health-bar-container"><div class="health-bar-fill" id="healthBarFill" style="width: 100%; background-color: #e74c3c;"></div></div>
+</div>
+
 <div class="game-container" id="gameContainer">
   <canvas id="canvas3d"></canvas>
   <button class="torpedo-btn" id="btnTorpedo">🎯 Selecionar Alvo</button>
   <button class="fpp-btn" id="btnFPP">👁️ Câmera 1ª Pessoa</button>
-  <button class="defense-btn" id="btnDropDefense">💣 Soltar Explosivo (Tecla 0)</button>
-  <div class="zoom-controls"><button class="zoom-btn" id="btnZoomIn" title="Aproximar Zoom">+</button><button class="zoom-btn" id="btnZoomOut" title="Afastar Zoom">-</button></div>
-  <div class="target-modal" id="targetModal"><button class="modal-close" id="btnCloseModal">✕</button><div class="modal-title">SELECIONAR ALVO DO TORPEDO</div><div class="modal-desc">Escolha o alvo para disparo:</div><div class="target-options-bar" id="targetOptionsBar"></div><div class="modal-actions"><button class="btn-action btn-confirm" id="btnConfirmLaunch">Confirmar Disparo (OK / 5)</button></div></div>
-  <div class="gameover-modal" id="gameOverModal"><div class="gameover-title" id="gameOverTitle">NAVIO DESTRUÍDO!</div><div class="gameover-desc" id="gameOverDesc">A batalha chegou ao fim.</div><div class="modal-actions" id="gameOverActions"><button class="btn-action btn-confirm" id="btnWatchMode">Assistir Partida</button><button class="btn-action" style="border-color:#ff3333; color:#ff3333;" id="btnExitGame">Sair para o Menu</button></div></div>
-  <div class="tv-remote"><button class="rc-btn rc-up" id="btnUp" title="Tecla 2">▲</button><button class="rc-btn rc-left" id="btnLeft" title="Tecla 4">◀</button><div class="rc-btn rc-center" id="btnCenter" title="Parar / Câmera Livre (OK / 5)">OK</div><button class="rc-btn rc-right" id="btnRight" title="Tecla 6">▶</button><button class="rc-btn rc-down" id="btnDown" title="Tecla 8">▼</button></div>
+  <button class="defense-btn" id="btnDropDefense">💣 Soltar Explosivo (0)</button>
+  <div class="zoom-controls">
+    <button class="zoom-btn" id="btnZoomIn" title="Aproximar Zoom">+</button>
+    <button class="zoom-btn" id="btnZoomOut" title="Afastar Zoom">-</button>
+  </div>
+  
+  <div class="target-modal" id="targetModal">
+    <button class="modal-close" id="btnCloseModal">✕</button>
+    <div class="modal-title">SELECIONAR ALVO DO TORPEDO</div>
+    <div class="modal-desc">Escolha o alvo para disparo:</div>
+    <div class="target-options-bar" id="targetOptionsBar"></div>
+    <div class="modal-actions">
+      <button class="btn-action btn-confirm" id="btnConfirmLaunch">Confirmar Disparo (OK / 5)</button>
+    </div>
+  </div>
+
+  <div class="gameover-modal" id="gameOverModal">
+    <div class="gameover-title" id="gameOverTitle">NAVIO DESTRUÍDO!</div>
+    <div class="gameover-desc" id="gameOverDesc">A batalha chegou ao fim.</div>
+    <div class="modal-actions" id="gameOverActions">
+      <button class="btn-action btn-confirm" id="btnWatchMode">Assistir Partida</button>
+      <button class="btn-action" style="border-color:#ff3333; color:#ff3333;" id="btnExitGame">Sair para o Menu</button>
+    </div>
+  </div>
+
+  <div class="tv-remote">
+    <button class="rc-btn rc-up" id="btnUp" title="Tecla 2">▲</button>
+    <button class="rc-btn rc-left" id="btnLeft" title="Tecla 4">◀</button>
+    <div class="rc-btn rc-center" id="btnCenter" title="OK">OK</div>
+    <button class="rc-btn rc-right" id="btnRight" title="Tecla 6">▶</button>
+    <button class="rc-btn rc-down" id="btnDown" title="Tecla 8">▼</button>
+  </div>
   <div class="toast-msg" id="toastMsg">Sistema pronto!</div>
 </div>
+
 <script>
+// Web Audio API Initialization
 let audioCtx = null;
-function initAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }
-function playSound(type){ try{ initAudio(); if(!audioCtx) return; const now=audioCtx.currentTime; if(type==='shot'){ const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.type='triangle'; osc.frequency.setValueAtTime(300,now); osc.frequency.exponentialRampToValueAtTime(40,now+0.3); gain.gain.setValueAtTime(0.5,now); gain.gain.linearRampToValueAtTime(0.01,now+0.3); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now+0.3);} else if(type==='torpedo'){ const osc=audioCtx.createOscillator(); const gain=audioCtx.createGain(); osc.type='sine'; osc.frequency.setValueAtTime(600,now); osc.frequency.exponentialRampToValueAtTime(200,now+0.5); gain.gain.setValueAtTime(0.3,now); gain.gain.linearRampToValueAtTime(0.01,now+0.5); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now+0.5);} else if(type==='explosion'){ const bufferSize=audioCtx.sampleRate*0.8; const buffer=audioCtx.createBuffer(1,bufferSize,audioCtx.sampleRate); const output=buffer.getChannelData(0); for(let i=0;i<bufferSize;i++) output[i]=Math.random()*2-1; const whiteNoise=audioCtx.createBufferSource(); whiteNoise.buffer=buffer; const filter=audioCtx.createBiquadFilter(); filter.type='lowpass'; filter.frequency.setValueAtTime(800,now); filter.frequency.linearRampToValueAtTime(50,now+0.8); const gain=audioCtx.createGain(); gain.gain.setValueAtTime(0.8,now); gain.gain.linearRampToValueAtTime(0.01,now+0.8); whiteNoise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); whiteNoise.start(now); whiteNoise.stop(now+0.8);} }catch(e){} }
+function initAudio(){ 
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); 
+  if(audioCtx.state==='suspended') audioCtx.resume(); 
+}
+
+function playSound(type){ 
+  try{ 
+    initAudio(); 
+    if(!audioCtx) return; 
+    const now = audioCtx.currentTime; 
+    if(type==='shot'){ 
+      const osc = audioCtx.createOscillator(); 
+      const gain = audioCtx.createGain(); 
+      osc.type = 'triangle'; 
+      osc.frequency.setValueAtTime(300, now); 
+      osc.frequency.exponentialRampToValueAtTime(40, now+0.3); 
+      gain.gain.setValueAtTime(0.5, now); 
+      gain.gain.linearRampToValueAtTime(0.01, now+0.3); 
+      osc.connect(gain); gain.connect(audioCtx.destination); 
+      osc.start(now); osc.stop(now+0.3);
+    } else if(type==='torpedo'){ 
+      const osc = audioCtx.createOscillator(); 
+      const gain = audioCtx.createGain(); 
+      osc.type = 'sine'; 
+      osc.frequency.setValueAtTime(600, now); 
+      osc.frequency.exponentialRampToValueAtTime(200, now+0.5); 
+      gain.gain.setValueAtTime(0.3, now); 
+      gain.gain.linearRampToValueAtTime(0.01, now+0.5); 
+      osc.connect(gain); gain.connect(audioCtx.destination); 
+      osc.start(now); osc.stop(now+0.5);
+    } else if(type==='explosion'){ 
+      const bufferSize = audioCtx.sampleRate * 0.8; 
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate); 
+      const output = buffer.getChannelData(0); 
+      for(let i=0; i<bufferSize; i++) output[i] = Math.random()*2-1; 
+      const whiteNoise = audioCtx.createBufferSource(); 
+      whiteNoise.buffer = buffer; 
+      const filter = audioCtx.createBiquadFilter(); 
+      filter.type = 'lowpass'; 
+      filter.frequency.setValueAtTime(800, now); 
+      filter.frequency.linearRampToValueAtTime(50, now+0.8); 
+      const gain = audioCtx.createGain(); 
+      gain.gain.setValueAtTime(0.8, now); 
+      gain.gain.linearRampToValueAtTime(0.01, now+0.8); 
+      whiteNoise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination); 
+      whiteNoise.start(now); whiteNoise.stop(now+0.8);
+    } 
+  }catch(e){} 
+}
+
+// User Profile Management
 let playerName = localStorage.getItem('tidal_player_name') || "Comandante_" + Math.floor(Math.random()*900+100);
 let selectedShipStyle = localStorage.getItem('tidal_ship_style') || "frigate";
 document.getElementById('profileNameDisplay').textContent = playerName;
-document.querySelectorAll('.ship-style-card').forEach(card => { if(card.dataset.style===selectedShipStyle){ document.querySelectorAll('.ship-style-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); } card.onclick=()=>{ document.querySelectorAll('.ship-style-card').forEach(c=>c.classList.remove('selected')); card.classList.add('selected'); selectedShipStyle=card.dataset.style; }; });
-const profileModal=document.getElementById('profileModal');
-document.getElementById('btnOpenProfile').onclick=()=>{ initAudio(); document.getElementById('profileNameInput').value=playerName; profileModal.classList.add('show'); };
-document.getElementById('btnCancelProfile').onclick=()=>profileModal.classList.remove('show');
-document.getElementById('btnSaveProfile').onclick=()=>{ const val=document.getElementById('profileNameInput').value.trim(); if(val){ playerName=val; localStorage.setItem('tidal_player_name',playerName); document.getElementById('profileNameDisplay').textContent=playerName; } localStorage.setItem('tidal_ship_style',selectedShipStyle); showToast("💾 Perfil salvo!"); profileModal.classList.remove('show'); };
-let peer=null; let conn=null; let connectedPeers=[]; let remotePlayersMap=new Map(); let isHost=false; const maxPlayers=4;
-const lobbyScreen=document.getElementById('lobbyScreen'); const lobbyInfoStatus=document.getElementById('lobbyInfoStatus'); const roomsContainer=document.getElementById('roomsContainer'); const btnStartGameManual=document.getElementById('btnStartGameManual'); const roomsSidebar=document.getElementById('roomsSidebar');
-const roomPrefix="tidal_net_v5_";
-document.getElementById('btnOpenRoomsSidebar').onclick=()=>{ initAudio(); roomsSidebar.classList.add('show'); scanAvailableRoomsAutomatically(); };
-document.getElementById('btnCloseSidebar').onclick=()=>roomsSidebar.classList.remove('show');
-let gameStarted=false;
-function updateHostButtonState(){ const totalConnected=connectedPeers.length+1; btnStartGameManual.textContent=`Iniciar Jogo (${totalConnected} Jogador${totalConnected>1?'es':''})`; btnStartGameManual.style.display="block"; }
-document.getElementById('btnCreateRoom').onclick=()=>{ initAudio(); document.getElementById('hudPlayerName').textContent=`⚓ ${playerName}`; const cleanName=playerName.replace(/[^a-zA-Z0-9]/g,'_'); const fullRoomId=roomPrefix+cleanName+"_"+Math.floor(Math.random()*1000); isHost=true; if(peer && !peer.destroyed) peer.destroy(); peer=new Peer(fullRoomId,{config:{'iceServers':[{urls:'stun:stun.l.google.com:19302'}]}}); peer.on('open',(id)=>{ localStorage.setItem('tidal_my_room_id',id); lobbyInfoStatus.innerHTML=`<b style="color:#00d2d3;">SALA CRIADA NA REDE!</b><br>Outros aparelhos já podem buscar sua sala na barra lateral.`; updateHostButtonState(); showToast(`📡 Sala ativa: ${playerName}`); }); peer.on('connection',(incomingConn)=>{ if(connectedPeers.length>=maxPlayers-1){ incomingConn.on('open',()=>{ incomingConn.send({type:'FULL'}); }); return; } connectedPeers.push(incomingConn); lobbyInfoStatus.innerHTML=`
+
+document.querySelectorAll('.ship-style-card').forEach(card => { 
+  if(card.dataset.style === selectedShipStyle){ 
+    document.querySelectorAll('.ship-style-card').forEach(c=>c.classList.remove('selected')); 
+    card.classList.add('selected'); 
+  } 
+  card.onclick = () => { 
+    document.querySelectorAll('.ship-style-card').forEach(c=>c.classList.remove('selected')); 
+    card.classList.add('selected'); 
+    selectedShipStyle = card.dataset.style; 
+  }; 
+});
+
+const profileModal = document.getElementById('profileModal');
+document.getElementById('btnOpenProfile').onclick = () => { 
+  initAudio(); 
+  document.getElementById('profileNameInput').value = playerName; 
+  profileModal.classList.add('show'); 
+};
+document.getElementById('btnCancelProfile').onclick = () => profileModal.classList.remove('show');
+document.getElementById('btnSaveProfile').onclick = () => { 
+  const val = document.getElementById('profileNameInput').value.trim(); 
+  if(val){ 
+    playerName = val; 
+    localStorage.setItem('tidal_player_name', playerName); 
+    document.getElementById('profileNameDisplay').textContent = playerName; 
+  } 
+  localStorage.setItem('tidal_ship_style', selectedShipStyle); 
+  showToast("💾 Perfil salvo!"); 
+  profileModal.classList.remove('show'); 
+};
+
+// PeerJS & Multiplayer Setup
+let peer = null; let conn = null; let connectedPeers = []; let remotePlayersMap = new Map(); let isHost = false; const maxPlayers = 4;
+const lobbyScreen = document.getElementById('lobbyScreen'); 
+const lobbyInfoStatus = document.getElementById('lobbyInfoStatus'); 
+const roomsContainer = document.getElementById('roomsContainer'); 
+const btnStartGameManual = document.getElementById('btnStartGameManual'); 
+const roomsSidebar = document.getElementById('roomsSidebar');
+const roomPrefix = "tidal_net_v5_";
+
+document.getElementById('btnOpenRoomsSidebar').onclick = () => { 
+  initAudio(); 
+  roomsSidebar.classList.add('show'); 
+  scanAvailableRoomsAutomatically(); 
+};
+document.getElementById('btnCloseSidebar').onclick = () => roomsSidebar.classList.remove('show');
+
+let gameStarted = false;
+function updateHostButtonState(){ 
+  const totalConnected = connectedPeers.length + 1; 
+  btnStartGameManual.textContent = `Iniciar Jogo (${totalConnected} Jogador${totalConnected>1?'es':''})`; 
+  btnStartGameManual.style.display = "block"; 
+}
+
+document.getElementById('btnCreateRoom').onclick = () => { 
+  initAudio(); 
+  document.getElementById('hudPlayerName').textContent = `⚓ ${playerName}`; 
+  const cleanName = playerName.replace(/[^a-zA-Z0-9]/g, '_'); 
+  const fullRoomId = roomPrefix + cleanName + "_" + Math.floor(Math.random()*1000); 
+  isHost = true; 
+  if(peer && !peer.destroyed) peer.destroy(); 
+  peer = new Peer(fullRoomId, {config: {'iceServers': [{urls: 'stun:stun.l.google.com:19302'}]}}); 
+  
+  peer.on('open', (id) => { 
+    localStorage.setItem('tidal_my_room_id', id); 
+    lobbyInfoStatus.innerHTML = `<b style="color:#00d2d3;">SALA CRIADA NA REDE!</b><br>ID da sala: ${id}`; 
+    updateHostButtonState(); 
+    showToast(`📡 Sala ativa: ${playerName}`); 
+  }); 
+  
+  peer.on('connection', (incomingConn) => { 
+    if(connectedPeers.length >= maxPlayers-1){ 
+      incomingConn.on('open', () => { incomingConn.send({type: 'FULL'}); }); 
+      return; 
+    } 
+    connectedPeers.push(incomingConn); 
+    lobbyInfoStatus.innerHTML = `<b style="color:#00d364;">JOGADOR CONECTADO!</b><br>Total no Lobby: ${connectedPeers.length+1}/${maxPlayers}`; 
+    updateHostButtonState(); 
+    showToast(`👥 Jogador conectado!`); 
+    incomingConn.on('data', (data) => { handleNetworkData(data, incomingConn); }); 
+    incomingConn.on('close', () => { 
+      connectedPeers = connectedPeers.filter(c => c !== incomingConn); 
+      updateHostButtonState(); 
+    }); 
+  }); 
+};
+
+function scanAvailableRoomsAutomatically(){ 
+  roomsContainer.innerHTML = '<div style="padding:15px;text-align:center;font-size:11px;color:#8899ac;">Procurando salas ativas...</div>'; 
+  if(!peer || peer.destroyed){ 
+    peer = new Peer({config: {'iceServers': [{urls: 'stun:stun.l.google.com:19302'}]}}); 
+  } 
+  peer.on('open', () => { 
+    roomsContainer.innerHTML = ''; 
+    let testConn = peer.connect(roomPrefix + "Lobby", {serialization: 'json'}); 
+    setTimeout(() => { 
+      if(roomsContainer.childElementCount === 0){ 
+        roomsContainer.innerHTML = '<div style="padding:15px;text-align:center;font-size:11px;color:#ff6666;">Nenhuma sala encontrada.<br>Crie uma sala para jogar em rede.</div>'; 
+      } 
+    }, 2000); 
+  }); 
+}
+
+function handleNetworkData(data, sourceConn){ 
+  if(data.type === 'FULL'){ 
+    alert("A sala está cheia!"); 
+    location.reload(); 
+  } else if(data.type === 'START'){ 
+    startGameSession(); 
+  } else if(data.type === 'JOIN' && isHost){ 
+    sourceConn.peerName = data.name; 
+    sourceConn.peerStyle = data.style; 
+    showToast(`👤 ${data.name} entrou na sala!`); 
+  } else if(data.type === 'PLAYER_SYNC'){ 
+    if(!remotePlayersMap.has(data.peerId) && gameStarted){ 
+      const rMesh = createWarshipByStyle(data.style || 'frigate', 0xe74c3c, data.name); 
+      rMesh.position.set(data.x, 0, data.z); 
+      scene.add(rMesh); 
+      remotePlayersMap.set(data.peerId, {name: data.name, mesh: rMesh, x: data.x, z: data.z, targetX: data.x, targetZ: data.z, heading: data.heading, targetHeading: data.heading, health: data.health}); 
+    } else if(remotePlayersMap.has(data.peerId)){ 
+      const rp = remotePlayersMap.get(data.peerId); 
+      rp.targetX = data.x; 
+      rp.targetZ = data.z; 
+      rp.targetHeading = data.heading; 
+      rp.health = data.health; 
+    } 
+  } 
+}
+
+btnStartGameManual.onclick = () => { 
+  initAudio(); 
+  if(isHost){ 
+    connectedPeers.forEach(p => p.send({type: 'START'})); 
+    startGameSession(); 
+  } else { 
+    startGameSession(); 
+  } 
+};
+
+function startGameSession(){ 
+  lobbyScreen.classList.add('hidden'); 
+  roomsSidebar.classList.remove('show'); 
+  gameStarted = true; 
+  setTimeout(() => { 
+    if(renderer && container){ 
+      renderer.setSize(container.clientWidth, container.clientHeight); 
+      camera.aspect = container.clientWidth / container.clientHeight; 
+      camera.updateProjectionMatrix(); 
+    } 
+  }, 50); 
+  const hasHumanPeers = connectedPeers.length > 0 || conn !== null; 
+  if(hasHumanPeers){ 
+    botsData.forEach((b, idx) => { if(botMeshes[idx]) scene.remove(botMeshes[idx]); }); 
+    botsData.length = 0; 
+    botMeshes.length = 0; 
+    showToast("🎮 Partida Multiplayer Iniciada!"); 
+  } else { 
+    showToast("🎮 Partida Solo contra IA Iniciada!"); 
+  } 
+}
+
+// 3D Scene Initialization
+const container = document.getElementById('gameContainer'); 
+const canvas = document.getElementById('canvas3d');
+const scene = new THREE.Scene(); 
+scene.background = new THREE.Color(0x87ceeb); 
+scene.fog = new THREE.FogExp2(0x87ceeb, 0.0012);
+
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 3000);
+let cameraZoomDistance = 80; let isFreeCamera = false; let isFirstPersonCamera = false; 
+let freeCamPos = {x: 0, z: 0};
+
+camera.position.set(0, cameraZoomDistance, cameraZoomDistance); 
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true, powerPreference: "high-performance"}); 
+renderer.setSize(container.clientWidth, container.clientHeight); 
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+window.addEventListener('resize', () => {
+  if (container && renderer && camera) {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  }
+});
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.9); 
+scene.add(ambientLight);
+const sunLight = new THREE.DirectionalLight(0xffffff, 0.6); 
+sunLight.position.set(100, 150, 100); 
+scene.add(sunLight);
+
+const mapSize = 1800; 
+const oceanGeometry = new THREE.PlaneGeometry(mapSize, mapSize, 64, 64); 
+const oceanMaterial = new THREE.MeshStandardMaterial({color: 0x004477, roughness: 0.9, metalness: 0.1, flatShading: true}); 
+const ocean = new THREE.Mesh(oceanGeometry, oceanMaterial); 
+ocean.rotation.x = -Math.PI / 2; 
+scene.add(ocean);
+
+const islandColliders = [];
+function createWorldIslands(){ 
+  const islandConfigs = [
+    {x:-250, z:-250, r:50, h:6.0}, {x:280, z:-220, r:55, h:7.0},
+    {x:-220, z:260, r:45, h:5.5}, {x:260, z:240, r:60, h:6.5},
+    {x:0, z:-400, r:70, h:8.0}, {x:-420, z:0, r:65, h:7.0},
+    {x:420, z:0, r:60, h:7.5}, {x:0, z:400, r:65, h:6.5}
+  ]; 
+  islandConfigs.forEach(data => { 
+    const group = new THREE.Group(); 
+    const shape = new THREE.Shape(); 
+    const pts = 32; 
+    for(let i=0; i<pts; i++){ 
+      const angle = (i/pts) * Math.PI * 2; 
+      const radius = data.r * (0.85 + Math.sin(angle*3)*0.15); 
+      const x = Math.cos(angle)*radius; 
+      const y = Math.sin(angle)*radius; 
+      if(i === 0) shape.moveTo(x, y); 
+      else shape.lineTo(x, y); 
+    } 
+    const baseGeo = new THREE.ExtrudeGeometry(shape, {depth: data.h, bevelEnabled: true, bevelSize: 1.5, bevelThickness: 1.0}); 
+    const sandMat = new THREE.MeshStandardMaterial({color: 0xd2b48c, roughness: 0.95}); 
+    const baseMesh = new THREE.Mesh(baseGeo, sandMat); 
+    baseMesh.rotation.x = -Math.PI / 2; 
+    group.add(baseMesh); 
+    group.position.set(data.x, 0, data.z); 
+    scene.add(group); 
+    islandColliders.push({x: data.x, z: data.z, radius: data.r * 0.90}); 
+  }); 
+}
+createWorldIslands();
+
+function checkIslandCollision(x, z, radius = 4.0){ 
+  for(let island of islandColliders){ 
+    if(Math.hypot(x - island.x, z - island.z) < island.radius + radius) return true; 
+  } 
+  return false; 
+}
+
+function getSafeSpawnPosition(preferredX, preferredZ, existingPositions = []){ 
+  let x = preferredX, z = preferredZ, attempts = 0; 
+  while(attempts < 100){ 
+    if(!checkIslandCollision(x, z, 20.0) && !existingPositions.some(p => Math.hypot(p.x - x, p.z - z) < 120)) break; 
+    const angle = Math.random() * Math.PI * 2; 
+    const dist = 250 + Math.random() * 350; 
+    x = Math.cos(angle) * dist; 
+    z = Math.sin(angle) * dist; 
+    attempts++; 
+  } 
+  return {x, z}; 
+}
+
+// 3D Ship Mesh Generator
+function createWarshipByStyle(style, deckColorHex, nameText){
+  if(style === 'battleship') return createRealisticShip(deckColorHex, nameText, {scale:1.25, barrels:2, hullColor:0x475569});
+  if(style === 'destroyer') return createRealisticShip(deckColorHex, nameText, {scale:0.88, barrels:1, hullColor:0x3a4a5a});
+  if(style === 'cruiser') return createRealisticShip(deckColorHex, nameText, {scale:1.08, barrels:1, hullColor:0x4a5a6a});
+  return createRealisticShip(deckColorHex, nameText, {scale:1.0, barrels:1, hullColor:0x475569});
+}
+
+function createRealisticShip(deckColorHex, nameText, opts){
+  const group = new THREE.Group();
+  const S = opts.scale || 1;
+  const hullMat = new THREE.MeshStandardMaterial({color: opts.hullColor || 0x475569, roughness:0.55, metalness:0.35});
+  const deckMat = new THREE.MeshStandardMaterial({color: deckColorHex, roughness:0.85});
+  const superMat = new THREE.MeshStandardMaterial({color:0xe2e8f0, roughness:0.5, metalness:0.2});
+  const darkMat = new THREE.MeshStandardMaterial({color:0x0f172a, roughness:0.4, metalness:0.5});
+  const redMat = new THREE.MeshStandardMaterial({color:0xb02a1e, roughness:0.6});
+  const whiteMat = new THREE.MeshStandardMaterial({color:0xf0f0f0, roughness:0.6});
+  const glassMat = new THREE.MeshStandardMaterial({color:0x0a1a2a, roughness:0.15, metalness:0.8});
+
+  const hullShape = new THREE.Shape();
+  hullShape.moveTo(0, -14*S);
+  hullShape.bezierCurveTo(2.6*S, -12*S, 2.8*S, -6*S, 2.5*S, 0);
+  hullShape.bezierCurveTo(2.3*S, 6*S, 1.8*S, 11*S, 0.9*S, 15*S);
+  hullShape.bezierCurveTo(0.5*S, 16.5*S, 0.2*S, 17*S, 0, 17*S);
+  hullShape.bezierCurveTo(-0.2*S, 17*S, -0.5*S, 16.5*S, -0.9*S, 15*S);
+  hullShape.bezierCurveTo(-1.8*S, 11*S, -2.3*S, 6*S, -2.5*S, 0);
+  hullShape.bezierCurveTo(-2.8*S, -6*S, -2.6*S, -12*S, 0, -14*S);
+  
+  const hullGeo = new THREE.ExtrudeGeometry(hullShape, {depth: 3.2*S, bevelEnabled:true, bevelThickness:0.3, bevelSize:0.25, bevelSegments:1, curveSegments:12});
+  const hull = new THREE.Mesh(hullGeo, hullMat);
+  hull.rotation.x = -Math.PI/2;
+  hull.position.y = -1.6*S;
+  group.add(hull);
+
+  const waterline = new THREE.Mesh(new THREE.BoxGeometry(5.0*S, 0.25, 28*S), redMat);
+  waterline.position.set(0, -1.15, 0);
+  group.add(waterline);
+
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(4.6*S, 0.22, 28*S), deckMat);
+  deck.position.set(0, 0.05, 0);
+  group.add(deck);
+
+  const bridge = new THREE.Mesh(new THREE.BoxGeometry(3.2*S, 1.8*S, 4.0*S), superMat);
+  bridge.position.set(0, 1.2*S, 0.2); 
+  group.add(bridge);
+  
+  const win = new THREE.Mesh(new THREE.BoxGeometry(2.8*S, 0.4*S, 0.1), glassMat);
+  win.position.set(0, 1.6*S, 2.2*S); 
+  group.add(win);
+
+  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.15*S, 0.5*S, 3.0*S, 4), hullMat);
+  mast.position.set(0, 3.2*S, -1.8*S); 
+  group.add(mast);
+  
+  const radar = new THREE.Mesh(new THREE.BoxGeometry(1.6*S, 0.2, 0.3), darkMat);
+  radar.position.set(0, 4.5*S, -1.8*S); 
+  group.add(radar);
+
+  const turret = new THREE.Group();
+  const tBase = new THREE.Mesh(new THREE.CylinderGeometry(1.2*S, 1.4*S, 0.9, 8), superMat);
+  turret.add(tBase);
+  for(let b=0; b<opts.barrels; b++){
+    const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.24, 4.2, 8), darkMat);
+    barrel.rotation.x = Math.PI/2;
+    barrel.position.set((b===0?-0.35:0.35)*S * (opts.barrels===1?0:1), 0.3, 2.0);
+    if(opts.barrels===1) barrel.position.x = 0;
+    turret.add(barrel);
+  }
+  turret.position.set(0, 0.6, 9.0*S);
+  group.add(turret);
+
+  addLabelSprite(group, nameText);
+  return group;
+}
+
+function addLabelSprite(group, nameText){ 
+  const canvasText = document.createElement('canvas'); 
+  canvasText.width = 256; 
+  canvasText.height = 64; 
+  const ctx = canvasText.getContext('2d'); 
+  ctx.fillStyle = 'rgba(10, 20, 35, 0.85)'; 
+  ctx.fillRect(10,10,236,44); 
+  ctx.fillStyle = '#ffffff'; 
+  ctx.font = 'bold 22px Segoe UI'; 
+  ctx.textAlign = 'center'; 
+  ctx.textBaseline = 'middle'; 
+  ctx.fillText(nameText, 128, 32); 
+  const texture = new THREE.CanvasTexture(canvasText); 
+  const spriteMat = new THREE.SpriteMaterial({map: texture, transparent: true}); 
+  const sprite = new THREE.Sprite(spriteMat); 
+  sprite.position.set(0, 8.5, 0); 
+  sprite.scale.set(6, 1.5, 1); 
+  group.add(sprite); 
+}
+
+const occupiedPositions = [];
+const availableColors = [
+  {name: "VERMELHO", hex: 0xe74c3c, css: "#e74c3c"},
+  {name: "VERDE", hex: 0x2ecc71, css: "#2ecc71"},
+  {name: "AMARELO", hex: 0xd4ac0d, css: "#d4ac0d"},
+  {name: "AZUL", hex: 0x00a8ff, css: "#00a8ff"}
+];
+
+const playerColor = availableColors[0]; 
+const playerSpawn = getSafeSpawnPosition(0, -350, occupiedPositions); 
+occupiedPositions.push(playerSpawn);
+
+const shipGroup = createWarshipByStyle(selectedShipStyle, playerColor.hex, playerName); 
+shipGroup.position.set(playerSpawn.x, 0, playerSpawn.z); 
+scene.add(shipGroup);
+
+let shipPos = {x: playerSpawn.x, z: playerSpawn.z}; 
+let playerHealth = 100; 
+let isPlayerAlive = true;
+const healthBarFill = document.getElementById('healthBarFill'); 
+const healthBarLabel = document.getElementById('healthBarLabel'); 
+healthBarFill.style.backgroundColor = playerColor.css;
+
+const botNamesList = ["Capitão Robô 1", "Marujo IA", "Corsário Bot"]; 
+const botsData = [];
+for(let i=0; i<3; i++){ 
+  const col = availableColors[i+1]; 
+  const safePos = getSafeSpawnPosition((i%2===0?350:-350), (i<2?-350:350), occupiedPositions); 
+  occupiedPositions.push(safePos); 
+  botsData.push({
+    id: i, name: botNamesList[i], colorHex: col.hex, colorCss: col.css, colorName: col.name, 
+    x: safePos.x, z: safePos.z, heading: Math.random()*Math.PI, health: 100, speed: 0.35, 
+    lastShot: 0, lastTorpedo: 0, torpedos: 10
+  }); 
+}
+
+const botMeshes = botsData.map((b) => { 
+  const mesh = createWarshipByStyle('frigate', b.colorHex, b.name); 
+  mesh.position.set(b.x, 0, b.z); 
+  scene.add(mesh); 
+  return mesh; 
+});
+
+let selectedTargetId = 0;
+function buildTargetOptionsUI(){ 
+  const bar = document.getElementById('targetOptionsBar'); 
+  bar.innerHTML = ''; 
+  const activeBots = botsData.filter(b => b.health > 0); 
+  if(activeBots.length === 0){
+    bar.innerHTML = '<div style="font-size:11px; color:#8899ac;">Nenhum inimigo ativo!</div>';
+    return;
+  }
+  activeBots.forEach(bot => { 
+    const card = document.createElement('div'); 
+    card.className = `target-option-card ${bot.id === selectedTargetId ? 'selected' : ''}`; 
+    card.onclick = () => { 
+      selectedTargetId = bot.id; 
+      document.querySelectorAll('.target-option-card').forEach(c => c.classList.remove('selected')); 
+      card.classList.add('selected'); 
+    }; 
+    card.innerHTML = `<div class="ship-color-icon" style="background:${bot.colorCss}"></div><span>${bot.name} (${bot.health}%)</span>`; 
+    bar.appendChild(card); 
+  }); 
+}
+
+let torpedoCount = 10; 
+const activeProjectiles = []; 
+const botProjectiles = []; 
+const activeTorpedos = []; 
+const activeExplosions = []; 
+const defenseMines = [];
+
+const projectileGeo = new THREE.CylinderGeometry(0.1, 0.1, 1.4, 6); 
+projectileGeo.rotateX(Math.PI/2); 
+const projectileMat = new THREE.MeshBasicMaterial({color: 0xffaa00}); 
+const botProjectileMat = new THREE.MeshBasicMaterial({color: 0xff3333});
+
+const torpedoGeo = new THREE.CylinderGeometry(0.15, 0.15, 2.2, 8); 
+torpedoGeo.rotateZ(Math.PI/2); 
+const torpedoMat = new THREE.MeshStandardMaterial({color: 0x444d56, metalness: 0.9, roughness: 0.2});
+
+function fireProjectileFromShip(shipObj, heading, isBot=false, customWorldPos=null){ 
+  playSound('shot'); 
+  let startX = customWorldPos ? customWorldPos.x : shipObj.x; 
+  let startZ = customWorldPos ? customWorldPos.z : shipObj.z; 
+  const mesh = new THREE.Mesh(projectileGeo, isBot ? botProjectileMat : projectileMat); 
+  mesh.position.set(startX, 1.5, startZ); 
+  mesh.rotation.y = heading; 
+  scene.add(mesh); 
+  const list = isBot ? botProjectiles : activeProjectiles; 
+  list.push({mesh: mesh, x: startX, z: startZ, heading: heading, speed: 2.5, life: 120}); 
+}
+
+function createExplosionEffect(x, z){ 
+  playSound('explosion'); 
+  const expGroup = new THREE.Group(); 
+  const fireGeo = new THREE.SphereGeometry(2.0, 12, 12); 
+  const fireMat = new THREE.MeshBasicMaterial({color: 0xff5500, transparent: true, opacity: 0.9}); 
+  expGroup.add(new THREE.Mesh(fireGeo, fireMat)); 
+  expGroup.position.set(x, 1.0, z); 
+  scene.add(expGroup); 
+  activeExplosions.push({group: expGroup, life: 40}); 
+}
+
+function dropDefenseMine(){ 
+  if(!isPlayerAlive) return; 
+  playSound('torpedo'); 
+  const dropX = shipPos.x - Math.sin(currentHeading) * 15.0; 
+  const dropZ = shipPos.z - Math.cos(currentHeading) * 15.0; 
+  const mineGeo = new THREE.SphereGeometry(0.8, 10, 10); 
+  const mineMat = new THREE.MeshStandardMaterial({color: 0xff3333, metalness: 0.8}); 
+  const mineMesh = new THREE.Mesh(mineGeo, mineMat); 
+  mineMesh.position.set(dropX, 0.4, dropZ); 
+  scene.add(mineMesh); 
+  defenseMines.push({mesh: mineMesh, x: dropX, z: dropZ, life: 30*60}); 
+  showToast("💣 Carga defensiva lançada na popa!"); 
+}
+document.getElementById('btnDropDefense').onclick = dropDefenseMine;
+
+function launchGuidedTorpedo(){ 
+  if(torpedoCount <= 0){ 
+    showToast("⚠️ Torpedos esgotados!"); 
+    return; 
+  } 
+  const targetBot = botsData.find(b => b.id === selectedTargetId && b.health > 0); 
+  if(botsData.length > 0 && !targetBot){ 
+    showToast("⚠️ Escolha um alvo válido!"); 
+    return; 
+  } 
+  torpedoCount--; 
+  document.getElementById('torpedoCount').textContent = `${torpedoCount}/10`; 
+  playSound('torpedo'); 
+  const launchX = shipPos.x + Math.sin(currentHeading) * 4.0; 
+  const launchZ = shipPos.z + Math.cos(currentHeading) * 4.0; 
+  const torpedoGroup = new THREE.Group(); 
+  torpedoGroup.add(new THREE.Mesh(torpedoGeo, torpedoMat)); 
+  torpedoGroup.position.set(launchX, 0.15, launchZ); 
+  scene.add(torpedoGroup); 
+  activeTorpedos.push({mesh: torpedoGroup, x: launchX, z: launchZ, speed: 0.8, targetId: selectedTargetId, life: 300}); 
+  showToast(`🚀 Torpedo lançado!`); 
+}
+
+let currentSpeed = 0; const cruisingSpeed = 0.45; const maxBoostSpeed = 0.75; let currentHeading = Math.PI;
+const controlsState = {up: false, down: false, left: false, right: false};
+
+function bindPressEvent(id, actionName){ 
+  const btn = document.getElementById(id); 
+  const pressOn = (e) => { 
+    if(e) e.preventDefault(); 
+    initAudio(); 
+    if(!isPlayerAlive) return; 
+    controlsState[actionName] = true; 
+    btn.classList.add('pressed'); 
+  }; 
+  const pressOff = (e) => { 
+    if(e) e.preventDefault(); 
+    controlsState[actionName] = false; 
+    btn.classList.remove('pressed'); 
+  }; 
+  btn.addEventListener('pointerdown', pressOn); 
+  btn.addEventListener('pointerup', pressOff); 
+  btn.addEventListener('pointerleave', pressOff); 
+}
+bindPressEvent('btnUp', 'up'); 
+bindPressEvent('btnDown', 'down'); 
+bindPressEvent('btnLeft', 'left'); 
+bindPressEvent('btnRight', 'right');
+
+function triggerActionOK(){ 
+  initAudio(); 
+  if(targetModal.classList.contains('show')){ 
+    targetModal.classList.remove('show'); 
+    launchGuidedTorpedo(); 
+  } else if(!isFreeCamera && !isFirstPersonCamera){ 
+    currentSpeed = 0; 
+    controlsState.up = false; controlsState.down = false; controlsState.left = false; controlsState.right = false; 
+    isFreeCamera = true; 
+    freeCamPos.x = shipPos.x; freeCamPos.z = shipPos.z; 
+    showToast("🗺️ Câmera Livre Ativada!"); 
+  } else { 
+    isFreeCamera = false; 
+    isFirstPersonCamera = false; 
+    showToast("⚓ Foco no navio."); 
+  } 
+}
+
+document.getElementById('btnCenter').onclick = triggerActionOK; 
+document.getElementById('btnFPP').onclick = () => { 
+  initAudio(); 
+  if(!isPlayerAlive) return; 
+  isFirstPersonCamera = !isFirstPersonCamera; 
+  showToast(isFirstPersonCamera ? "👁️ Visão 1ª Pessoa" : "📷 Visão Padrão"); 
+}; 
+document.getElementById('btnZoomIn').onclick = () => { cameraZoomDistance = Math.max(25, cameraZoomDistance - 15); }; 
+document.getElementById('btnZoomOut').onclick = () => { cameraZoomDistance = Math.min(600, cameraZoomDistance + 15); };
+
+window.addEventListener('keydown', (e) => { 
+  if(!gameStarted) return; 
+  initAudio(); 
+  const key = e.key; 
+  if(key === '2' || key === 'ArrowUp') controlsState.up = true; 
+  if(key === '8' || key === 'ArrowDown') controlsState.down = true; 
+  if(key === '4' || key === 'ArrowLeft') controlsState.left = true; 
+  if(key === '6' || key === 'ArrowRight') controlsState.right = true; 
+  if(key === '5' || key === 'Enter') triggerActionOK(); 
+  if(key === '0' || key === '96') dropDefenseMine(); 
+  if(key.toLowerCase() === 't' && isPlayerAlive){ 
+    buildTargetOptionsUI(); 
+    targetModal.classList.add('show'); 
+  } 
+});
+
+window.addEventListener('keyup', (e) => { 
+  const key = e.key; 
+  if(key === '2' || key === 'ArrowUp') controlsState.up = false; 
+  if(key === '8' || key === 'ArrowDown') controlsState.down = false; 
+  if(key === '4' || key === 'ArrowLeft') controlsState.left = false; 
+  if(key === '6' || key === 'ArrowRight') controlsState.right = false; 
+});
+
+const targetModal = document.getElementById('targetModal'); 
+document.getElementById('btnTorpedo').onclick = () => { 
+  initAudio(); 
+  if(!isPlayerAlive) return; 
+  buildTargetOptionsUI(); 
+  targetModal.classList.add('show'); 
+}; 
+document.getElementById('btnCloseModal').onclick = () => targetModal.classList.remove('show'); 
+document.getElementById('btnConfirmLaunch').onclick = () => { 
+  targetModal.classList.remove('show'); 
+  launchGuidedTorpedo(); 
+};
+
+let gameEnded = false;
+function checkWinConditions(){ 
+  if(gameEnded) return; 
+  const aliveBots = botsData.filter(b => b.health > 0); 
+  if(botsData.length > 0 && isPlayerAlive && aliveBots.length === 0){ 
+    gameEnded = true; 
+    showVictoryScreen(true, playerName); 
+  } else if(botsData.length > 0 && !isPlayerAlive && aliveBots.length <= 1){ 
+    gameEnded = true; 
+    showVictoryScreen(false, aliveBots.length === 1 ? aliveBots[0].name : "Empate"); 
+  } 
+}
+
+function showVictoryScreen(isPlayerWinner, winnerName){ 
+  const modal = document.getElementById('gameOverModal'); 
+  document.getElementById('gameOverTitle').textContent = isPlayerWinner ? "🏆 VOCÊ VENCEU!" : `⚓ ${winnerName.toUpperCase()} VENCEU!`; 
+  modal.classList.add('show'); 
+}
+
+document.getElementById('btnWatchMode').onclick = () => { 
+  document.getElementById('gameOverModal').classList.remove('show'); 
+  isFreeCamera = true; 
+}; 
+document.getElementById('btnExitGame').onclick = () => location.reload();
+
+let gameTime = 0;
+function updateDayNightCycle(delta){ 
+  gameTime = (gameTime + delta) % 1200; 
+  let timeStr = ""; 
+  if(gameTime < 600){ 
+    timeStr = "☀️ Dia"; 
+    scene.background.setHex(0x87ceeb); 
+    scene.fog.color.setHex(0x87ceeb); 
+    ambientLight.intensity = 0.9; 
+    sunLight.intensity = 0.6; 
+  } else if(gameTime >= 600 && gameTime < 720){ 
+    timeStr = "🌇 Pôr do Sol"; 
+    scene.background.setHex(0xd35400); 
+    scene.fog.color.setHex(0xd35400); 
+    ambientLight.intensity = 0.6; 
+    sunLight.intensity = 0.4; 
+  } else if(gameTime >= 720 && gameTime < 1080){ 
+    timeStr = "🌙 Noite"; 
+    scene.background.setHex(0x050b14); 
+    scene.fog.color.setHex(0x050b14); 
+    ambientLight.intensity = 0.3; 
+    sunLight.intensity = 0.1; 
+  } else { 
+    timeStr = "🌅 Amanhecer"; 
+    scene.background.setHex(0xe67e22); 
+    scene.fog.color.setHex(0xe67e22); 
+    ambientLight.intensity = 0.5; 
+    sunLight.intensity = 0.3; 
+  } 
+  let minutes = Math.floor(gameTime / 60); 
+  let seconds = Math.floor(gameTime % 60); 
+  document.getElementById('timeBadge').textContent = `${timeStr} (${minutes<10?'0':''}${minutes}:${seconds<10?'0':''}${seconds})`; 
+}
+
+const halfMap = mapSize / 2 - 40; 
+const clock = new THREE.Clock(); 
+let lastPlayerShotTime = 0;
+
+function animate(){ 
+  requestAnimationFrame(animate); 
+  const delta = clock.getDelta(); 
+  const elapsedTime = clock.getElapsedTime(); 
+  updateDayNightCycle(delta); 
+  
+  if(gameStarted && !gameEnded){ 
+    checkWinConditions(); 
+    if(isPlayerAlive){ 
+      if(!isFreeCamera){ 
+        if(controlsState.up) currentSpeed = maxBoostSpeed; 
+        else if(controlsState.down) currentSpeed = -0.3; 
+        else currentSpeed = cruisingSpeed; 
+        
+        if(controlsState.left) currentHeading += 0.035; 
+        if(controlsState.right) currentHeading -= 0.035; 
+        
+        let nextX = shipPos.x + Math.sin(currentHeading) * currentSpeed; 
+        let nextZ = shipPos.z + Math.cos(currentHeading) * currentSpeed; 
+        
+        if(Math.abs(nextX) < halfMap && Math.abs(nextZ) < halfMap && !checkIslandCollision(nextX, nextZ, 5.0)){ 
+          shipPos.x = nextX; 
+          shipPos.z = nextZ; 
+        } else { 
+          currentSpeed = -0.4; 
+        } 
+        shipGroup.position.set(shipPos.x, 0, shipPos.z); 
+        shipGroup.rotation.y = currentHeading; 
+      } 
+      
+      if(isFreeCamera){ 
+        if(controlsState.up) freeCamPos.z -= 6.0; 
+        if(controlsState.down) freeCamPos.z += 6.0; 
+        if(controlsState.left) freeCamPos.x -= 6.0; 
+        if(controlsState.right) freeCamPos.x += 6.0; 
+      } else { 
+        freeCamPos.x = shipPos.x; 
+        freeCamPos.z = shipPos.z; 
+      } 
+      
+      if(elapsedTime - lastPlayerShotTime > 1.2 && botsData.length > 0){ 
+        let nearestBot = null; 
+        let minDist = 350; 
+        botsData.forEach(b => { 
+          if(b.health > 0){ 
+            let dist = Math.hypot(b.x - shipPos.x, b.z - shipPos.z); 
+            if(dist < minDist){ 
+              minDist = dist; 
+              nearestBot = b; 
+            } 
+          } 
+        }); 
+        if(nearestBot && minDist < 300){ 
+          lastPlayerShotTime = elapsedTime; 
+          let muzzleX = shipPos.x + Math.sin(currentHeading) * 12.0; 
+          let muzzleZ = shipPos.z + Math.cos(currentHeading) * 12.0; 
+          fireProjectileFromShip(shipPos, currentHeading, false, {x: muzzleX, z: muzzleZ}); 
+        } 
+      } 
+    } 
+
+    for(let i = defenseMines.length - 1; i >= 0; i--){ 
+      const mine = defenseMines[i]; 
+      mine.life--; 
+      botsData.forEach(b => { 
+        if(b.health > 0 && Math.hypot(b.x - mine.x, b.z - mine.z) < 6.0){ 
+          createExplosionEffect(mine.x, mine.z); 
+          b.health = Math.max(0, b.health - 35); 
+          scene.remove(mine.mesh); 
+          defenseMines.splice(i, 1); 
+        } 
+      }); 
+      if(mine.life <= 0){ 
+        scene.remove(mine.mesh); 
+        defenseMines.splice(i, 1); 
+      } 
+    } 
+
+    botsData.forEach((bot, idx) => { 
+      if(bot.health <= 0){ 
+        if(botMeshes[idx] && botMeshes[idx].visible){ 
+          botMeshes[idx].visible = false; 
+          createExplosionEffect(bot.x, bot.z); 
+        } 
+        return; 
+      } 
+      bot.x += Math.sin(bot.heading) * bot.speed; 
+      bot.z += Math.cos(bot.heading) * bot.speed; 
+      if(Math.abs(bot.x) > halfMap || Math.abs(bot.z) > halfMap || checkIslandCollision(bot.x, bot.z, 5.0)){
+        bot.heading += Math.PI * 0.5; 
+      }
+      botMeshes[idx].position.set(bot.x, 0, bot.z); 
+      botMeshes[idx].rotation.y = bot.heading; 
+      
+      if(isPlayerAlive && Math.hypot(shipPos.x - bot.x, shipPos.z - bot.z) < 250 && elapsedTime - bot.lastShot > 1.8){ 
+        bot.lastShot = elapsedTime; 
+        fireProjectileFromShip(bot, bot.heading, true); 
+      } 
+    }); 
+
+    for(let i = activeProjectiles.length - 1; i >= 0; i--){ 
+      const p = activeProjectiles[i]; 
+      p.x += Math.sin(p.heading) * p.speed; 
+      p.z += Math.cos(p.heading) * p.speed; 
+      p.mesh.position.set(p.x, 1.5, p.z); 
+      p.life--; 
+      let hit = false; 
+      botsData.forEach(b => { 
+        if(b.health > 0 && Math.hypot(b.x - p.x, b.z - p.z) < 6.0){ 
+          b.health = Math.max(0, b.health - 15); 
+          createExplosionEffect(p.x, p.z); 
+          hit = true; 
+        } 
+      }); 
+      if(hit || p.life <= 0 || checkIslandCollision(p.x, p.z, 2.0)){ 
+        scene.remove(p.mesh); 
+        activeProjectiles.splice(i, 1); 
+      } 
+    } 
+
+    for(let i = botProjectiles.length - 1; i >= 0; i--){ 
+      const p = botProjectiles[i]; 
+      p.x += Math.sin(p.heading) * p.speed; 
+      p.z += Math.cos(p.heading) * p.speed; 
+      p.mesh.position.set(p.x, 1.5, p.z); 
+      p.life--; 
+      if(isPlayerAlive && Math.hypot(shipPos.x - p.x, shipPos.z - p.z) < 6.0){ 
+        playerHealth = Math.max(0, playerHealth - 10); 
+        document.getElementById('playerHealthText').textContent = `${playerHealth}%`; 
+        healthBarFill.style.width = `${playerHealth}%`; 
+        healthBarLabel.textContent = `BLINDAGEM DO NAVIO: ${playerHealth}%`; 
+        createExplosionEffect(p.x, p.z); 
+        if(playerHealth <= 0){ 
+          isPlayerAlive = false; 
+          shipGroup.visible = false; 
+          document.getElementById('gameOverModal').classList.add('show'); 
+        } 
+        scene.remove(p.mesh); 
+        botProjectiles.splice(i, 1); 
+      } else if(p.life <= 0){ 
+        scene.remove(p.mesh); 
+        botProjectiles.splice(i, 1); 
+      } 
+    } 
+
+    for(let i = activeExplosions.length - 1; i >= 0; i--){
+      const exp = activeExplosions[i];
+      exp.life--;
+      if(exp.life <= 0){
+        scene.remove(exp.group);
+        activeExplosions.splice(i, 1);
+      }
+    }
+  } 
+
+  if(isFirstPersonCamera && isPlayerAlive){ 
+    camera.position.set(shipPos.x + Math.sin(currentHeading)*8.0, 3.2, shipPos.z + Math.cos(currentHeading)*8.0); 
+    camera.lookAt(shipPos.x + Math.sin(currentHeading)*80, 2.2, shipPos.z + Math.cos(currentHeading)*80); 
+  } else { 
+    camera.position.set(freeCamPos.x, cameraZoomDistance, freeCamPos.z + (isFreeCamera ? 0 : cameraZoomDistance * 0.8)); 
+    camera.lookAt(freeCamPos.x, 0, freeCamPos.z); 
+  } 
+  
+  renderer.render(scene, camera); 
+}
+
+window.onload = function(){
+  animate();
+};
+
+function showToast(msg){ 
+  const t = document.getElementById('toastMsg'); 
+  t.textContent = msg; 
+  t.classList.add('show'); 
+  setTimeout(() => t.classList.remove('show'), 2500); 
+}
+</script>
+</body>
+</html>
+```
